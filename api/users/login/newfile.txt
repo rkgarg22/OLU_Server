@@ -1,0 +1,1 @@
+{"age":0,"deviceType":"Android","emailAddress":"trainer@three.com","firebaseTokenId":"diIsGddctsQ:APA91bEeUuxpSU23egrOQ8tgewd-0x2SMpm5rHLQD-O7RRo32qUlORz4gPTgOm9ZaNbHWIAxNPOTqY8iJ5LepAGCg44GxPtmx6liwkIEQ7VqkUSi5qKAz4Y9OLe5WqMmKWfxRrgWscCdM0dACWDJ66ig_6_B6F-71w","password":"123456","userType":0}
