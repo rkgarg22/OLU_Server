@@ -8,6 +8,7 @@ $token = $_GET['token'];
 $login = "fcec4c9fd9ea26079d9302b2424d38ea";
 $planID = $_GET['planID'];
 $seed = date('c');
+$generateMyRefNumber = generateMyRefNumber();
 if (function_exists('random_bytes')) {
     $nonce = bin2hex(random_bytes(16));
 } elseif (function_exists('openssl_random_pseudo_bytes')) {
@@ -69,7 +70,7 @@ if ($userID == "") {
                 $nonceBase64 = base64_encode($nonce);
                 $nextmonth = date('c', strtotime(' +1 month'));
                 $tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
-                $collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($result->request->payer) . ' , "payment": { "reference": "1212", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "10000" } }}';
+                $collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($result->request->payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "10000" } }}';
                 $ch = curl_init();
                 $agents = array(
                     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1',
@@ -95,7 +96,8 @@ if ($userID == "") {
                     'moneyPlan' => $planID,
                     'moneyValue' => $priceValue,
                     'moneyAdded' => $priceGet,
-                    'created_date' => $current
+                    'created_date' => $current,
+                    'ref_num' => $generateMyRefNumber
                 ));
                 break;
             }

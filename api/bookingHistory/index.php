@@ -40,6 +40,17 @@ if ($userID == "") {
         } else {
             $bookingArr = array();
             foreach ($getUserDataBooking as $getUserDataBookingkey => $getUserDataBookingvalue) {
+                if ($getUserDataBookingvalue->booking_for == "single") {
+                    $section = 1;
+                } elseif ($getUserDataBookingvalue->booking_for == "business") {
+                    $section = 2;
+                } elseif ($getUserDataBookingvalue->booking_for == "business3") {
+                    $section = 4;
+                } elseif ($getUserDataBookingvalue->booking_for == "business4") {
+                    $section = 5;
+                } else {
+                    $section = 3;
+                }
                 if ($status == 1) {
 
                     $getBookingReview = $wpdb->get_results("SELECT * FROM `wtw_booking_reviews` WHERE `booking_id` = $getUserDataBookingvalue->id AND `review_from` = $getUserDataBookingvalue->booking_from");
@@ -78,14 +89,14 @@ if ($userID == "") {
                         $terMyTerm = get_term($getUserDataBookingvalue->category_id, "category");
                         // echo apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0);
                         $price = $wpdb->get_results("SELECT * FROM `wtw_usermeta` WHERE `user_id` = $getUserDataBookingvalue->user_id AND `meta_value` = $getUserDataBookingvalue->booking_price");
-                        if ($price[0]->meta_key == "single") {
+                        /* if ($price[0]->meta_key == "single") {
                             $section = 1;
                         } elseif ($price[0]->meta_key == "business") {
                             $section = 2;
                         } else {
                             $section = 3;
-                        }
-                        $bookingArr[] = array("userID" => (int)$userCheck, "bookingID" => (int)$getUserDataBookingvalue->id, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "categoryID" => (int)$terMyTerm->term_id, "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "userImageUrl" => $userImageUrl, "bookingLatitude" => $getUserDataBookingvalue->booking_latitude, "bookingLongitude" => $getUserDataBookingvalue->booking_longitude, "bookingAddress" => $getUserDataBookingvalue->booking_address , "review" => $review , "starRating" => $reviewStar, "bookingTime" => strtotime($getUserDataBookingvalue->booking_date." ". $getUserDataBookingvalue->booking_start));
+                        } */
+                        $bookingArr[] = array("userID" => (int)$userCheck, "bookingID" => (int)$getUserDataBookingvalue->id, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "categoryID" => (int)$terMyTerm->term_id, "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "userImageUrl" => $userImageUrl, "bookingLatitude" => $getUserDataBookingvalue->booking_latitude, "bookingLongitude" => $getUserDataBookingvalue->booking_longitude, "bookingAddress" => $getUserDataBookingvalue->booking_address , "review" => $review , "starRating" => $reviewStar, "bookingTime" => strtotime($getUserDataBookingvalue->booking_date." ". $getUserDataBookingvalue->booking_start) , "bookingFor" => $section);
                     } else {
                         $wpdb->query("UPDATE `wtw_booking` SET `status` = 5, `booking_action_time` = '$curent' WHERE `id` = $getUserDataBookingvalue->id");
                     }
@@ -106,14 +117,14 @@ if ($userID == "") {
                     $terMyTerm = get_term($getUserDataBookingvalue->category_id, "category");
                     // echo apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0);
                     $price = $wpdb->get_results("SELECT * FROM `wtw_usermeta` WHERE `user_id` = $getUserDataBookingvalue->user_id AND `meta_value` = $getUserDataBookingvalue->booking_price");
-                    if ($price[0]->meta_key == "single") {
+                   /*  if ($price[0]->meta_key == "single") {
                         $section = 1;
                     } elseif ($price[0]->meta_key == "business") {
                         $section = 2;
                     } else {
                         $section = 3;
-                    }
-                    $bookingArr[] = array("userID" => (int)$userCheck, "bookingID" => (int)$getUserDataBookingvalue->id, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "categoryID" => (int)$terMyTerm->term_id, "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "userImageUrl" => "$userImageUrl", "bookingLatitude" => $getUserDataBookingvalue->booking_latitude, "bookingLongitude" => $getUserDataBookingvalue->booking_longitude, "bookingAddress" => $getUserDataBookingvalue->booking_address , "bookingCreated" => $getUserDataBookingvalue->booking_created , "bookingAccepted" => $getUserDataBookingvalue->booking_action_time, "review" => $review, "starRating" => $reviewStar , "bookingTime" => strtotime($getUserDataBookingvalue->booking_date." ". $getUserDataBookingvalue->booking_start));
+                    } */
+                    $bookingArr[] = array("userID" => (int)$userCheck, "bookingID" => (int)$getUserDataBookingvalue->id, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "categoryID" => (int)$terMyTerm->term_id, "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "userImageUrl" => "$userImageUrl", "bookingLatitude" => $getUserDataBookingvalue->booking_latitude, "bookingLongitude" => $getUserDataBookingvalue->booking_longitude, "bookingAddress" => $getUserDataBookingvalue->booking_address , "bookingCreated" => $getUserDataBookingvalue->booking_created , "bookingAccepted" => $getUserDataBookingvalue->booking_action_time, "review" => $review, "starRating" => $reviewStar , "bookingTime" => strtotime($getUserDataBookingvalue->booking_date." ". $getUserDataBookingvalue->booking_start), "bookingFor" => $section);
                 }
 
                 

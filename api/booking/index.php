@@ -83,8 +83,8 @@ if ($userID == "") {
             $json = array("success" => 0, "result" => 0, "error" => "El entrandor está presentando una OLU actividad en este momento.", "isTokenSaved" =>1, "paymentRequire" => 0);
         } else {
             $dataCheckOne = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $bookinguserID AND `category_id` = $categoryID");
-            if($dataCheckOne[0]->$testName == "") {
-                $json = array("success" => 0, "result" => 0, "error" => "Reserva no disponible", "isTokenSaved" => 1, "paymentRequire" => 0);
+            if($dataCheckOne[0]->$testName == "" || (int)$dataCheckOne[0]->$testName <= 0) {
+                $json = array("success" => 0, "result" => 0, "error" => "El OLU que has seleccionado no está disponible bajo el parámetro de clase grupal que has seleccionado", "isTokenSaved" => 1, "paymentRequire" => 0);
             } else {
             ///Payment Check First
                 if($myWallet < $dataCheckOne[0]->$testName) {
@@ -133,13 +133,13 @@ if ($userID == "") {
                     $phone = get_user_meta($userID, "phone", true);
                     $userImageUrl = get_user_meta($userID, "userImageUrl", true);
                     $firebaseTokenId = get_user_meta($bookinguserID, "firebaseTokenId", true);
-                    $title = "OLU Fitness APP";
-                    $message = $firstName . " Quiere que reserves para el ejercicio";
+                    $title = "OLU";
+                    $message = "Tienes una nueva solicitud de ".$firstName ;
                     $data = array("bookingID" => $lastid, "name" => $firstName, "categoryID" => $categoryID, "categoryID" => $categoryID, "categoryName" => $categoryData->name, "day" => $bookingDate . " " . $bookingTime, "address" => $address);
                     $data = json_encode($data);
-                    $priceGroup = 0;
+                    $priceGroup1 = 0;
 
-                    sendMessageData($firebaseTokenId, $title, $message, $lastid, $firstName, $lastName, $categoryID, $categoryData->name, $bookingDate, $phone, $bookingTime . ":00", $endDateSetNoti, $priceGroup, $address, $latitude, $longitude, $userImageUrl, $priceGroup, $createdDate, "");
+                    sendMessageData($firebaseTokenId, $title, $message, $lastid, $firstName, $lastName, $categoryID, $categoryData->name, $bookingDate, $phone, $bookingTime . ":00", $endDateSetNoti, $priceGroup1, $address, $latitude, $longitude, $userImageUrl, $priceGroup, $createdDate, "");
 
                     update_user_meta($userID, "promoCode", "");
                     $json = array("success" => 1, "result" => 1, "error" => "No Error Found", "isTokenSaved" => 1 , "paymentRequire" => $paymentStatus);

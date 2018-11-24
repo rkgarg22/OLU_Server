@@ -12,6 +12,7 @@ if (function_exists('random_bytes')) {
 }
 $nonceBase64 = base64_encode($nonce);
 $nextmonth = date('c', strtotime(' +1 month'));
+$generateMyRefNumber = generateMyRefNumber();
 $tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
 if ($userID == "") {
     $json = array("success" => 0, "result" => null, "error" => "Todos los campos son obligatorios");
@@ -20,7 +21,7 @@ if ($userID == "") {
     if (empty($user)) {
         $json = array("success" => 0, "result" => null, "error" => "Usuario Inválido");
     } else {
-        $authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },"subscription" : { "reference": "' . rand(100000, 1000000) . '", "description": "Pago básico de prueba", "fields" : [] },"expiration": "' . $nextmonth . '", "returnUrl": "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/payment/return/", "ipAddress": "127.0.0.1", "userAgent": "PlacetoPay Sandbox"}';
+        $authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },"subscription" : { "reference": "' . $generateMyRefNumber . '", "description": "Pago básico de prueba", "fields" : [] },"expiration": "' . $nextmonth . '", "returnUrl": "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/payment/return/", "ipAddress": "127.0.0.1", "userAgent": "PlacetoPay Sandbox"}';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/session/");
         curl_setopt($ch, CURLOPT_POST, count(json_decode($authentication)));

@@ -33,7 +33,7 @@ if ($userID == "") {
                 $userImageUrl = get_user_meta($dataMy[0]->user_id, "userImageUrl", true);
                 $phone = get_user_meta($dataMy[0]->user_id, "phone", true);
                 $firebaseTokenId = get_user_meta($dataMy[0]->booking_from, "firebaseTokenId", true);
-                $title = "OLU Fitness APP";
+                $title = "OLU";
                 if ($state == 1) {
                     // echo $dataMy[0]->booking_from;
                     $myWallet = getUserWallet($dataMy[0]->booking_from);
@@ -51,11 +51,11 @@ if ($userID == "") {
                     ));
                     update_user_meta($dataMy[0]->user_id , "isOnline" , 1 );
                     $wpdb->query("UPDATE `wtw_booking` SET `isPaid` = 1 WHERE `id` = $bookingID");
-                    $message = $firstName . " Completó su reserva ahora en" . date("Y-m-d H:i:s");
+                        $message = " Se finaliza actividad";
                 } else {
 
                     update_user_meta($dataMy[0]->user_id, "isOnline", 0);
-                    $message = $firstName . " comienza su reserva ahora en" . date("Y-m-d H:i:s");
+                        $message = "Se inicia actividad";
                 }
                 if ($dataMy[0]->booking_for == "single") {
                     $section = 1;

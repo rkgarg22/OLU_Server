@@ -109,6 +109,18 @@ function accpetMyUpdate(updateID) {
 		}
 	});
 }
+function approveMyTrainer(userID) {
+	var suteUrl = jQuery(".suteUrl").val();
+	jQuery.ajax({
+		type: "POST",
+		data: { format: 'raw' },
+		url: suteUrl + '/api/trainerApprove/?userID=' + userID,
+		success: function (data) {
+			toastr.success("Hecho exitosamente");
+			setTimeout(function () { location.reload(); }, 3000);
+		}
+	});
+}
 function rejectUpdate(updateID) {
 	var suteUrl = jQuery(".suteUrl").val();
 	jQuery.ajax({

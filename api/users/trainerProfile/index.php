@@ -23,7 +23,7 @@ if ($userID == "") {
         $arrayData = $wpdb->get_results("SELECT * FROM  `wtw_user_pricing` WHERE `user_id` = $user->ID");
         foreach ($arrayData as $key => $value1) {
             $terMyTerm = get_term($value1->category_id, "category");
-            $arrayOrep[] = array("categoryID" => (int)$value1->category_id, "categoryName" => $terMyTerm->name, "singlePrice" => $value1->single_price, "groupPrice2" => $value1->group_price, "groupPrice3" => $value1->group_price3, "groupPrice4" => $value1->group_price4, "companyPrice" => $value1->company_price, );
+            $arrayOrep[] = array("CategryID" => (int)$value1->category_id, "categoryName" => $terMyTerm->name, "singlePrice" => $value1->single_price, "groupPrice2" => $value1->group_price, "groupPrice3" => $value1->group_price3, "groupPrice4" => $value1->group_price4, "companyPrice" => $value1->company_price, );
         }
 
         $arrayDataC = array("userID" => (int)$userID, "firstName" => $firstName, "lastName" => $lastName, "emailAddress" => $user->data->user_email, "userImageUrl" => $userImageUrl, "latitude" => $latitude, "longitude" => $longitude, "description" => $description, "phone" => $phone, "dob" => $dob, "gender" => $gender, "category" => $arrayOrep , "reviews" => (int)getUserRating($_GET['userID']));

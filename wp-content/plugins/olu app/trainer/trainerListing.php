@@ -60,38 +60,69 @@ echo "</pre>"; */
     } else {
         echo "Booking Reviews";
     } ?></th>
+    <th><?php if ($language == "es_ES") {
+        echo "Aprobar / No aprobar";
+    } else {
+        echo "Approve/Unapprove";
+    } ?></th>
 </tr>
 </thead>
 <tbody>
 <?php 
 $i = 1;
 foreach ($users as $key => $row) {
+    $isApprove = get_user_meta($row->ID, "isApprove", true);
     ?>
 <tr>
 <td><?php echo $i; ?></th>
 <td><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
 <td><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
 <td><p><?php echo $row->data->user_registered; ?></p></td>
-<td> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=user-update"><?php if ($language == "es_ES") {
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=user-update"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {
 echo "View";
 } ?></a></p> </td>
-<td> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=wallet"><?php if ($language == "es_ES") {
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=wallet"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {
 echo "View";
 } ?></a></p> </td>
-<td> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID; ?>&action=profile"><?php if ($language == "es_ES") {
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID; ?>&action=profile"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {
 echo "View";
 } ?></a></p> </td>
-<td> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID; ?>&action=reviews"><?php if ($language == "es_ES") {
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID; ?>&action=reviews"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {
 echo "View";
 } ?></a></p> </td>
+<td style="text-align:center;">
+<?php 
+if($isApprove == "yes") {
+    ?>
+        <div class="alert alert-success">
+        <?php if ($language == "es_ES") {
+            echo "Aprobar";
+        } else {
+            echo "Approve";
+        } ?>
+        </div>
+    <?php
+} else {
+    ?>
+    <div class="alert alert-info">
+        <?php if ($language == "es_ES") {
+            echo "No aprobar";
+        } else {
+            echo "Unapprove";
+        } ?>
+        </div>
+    <?php
+}
+?>
+</td>
 </tr>
 <?php $i++;
 } ?>

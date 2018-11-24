@@ -36,8 +36,8 @@ foreach ($getRes as $key => $value) {
 
         $userImageUrl = get_user_meta($value->user_id, "userImageUrl", true);
         $firebaseTokenId = get_user_meta($value->booking_from, "firebaseTokenId", true);
-        $title = "OLU Fitness APP";
-        $message = "Su reserva con " . $firstName . " ha expirado";
+        $title = "OLU";
+        $message = "Lo sentimos! " . $firstName . " no puede realizar la actividad.";
 
         $sendMessageData = sendMessageData($firebaseTokenId, $title, $message, $value->id, $firstName, $lastName, $value->category_id, $categoryData->name, $value->booking_date, $phone, $value->booking_start, $value->booking_end, 6, $value->booking_address, $value->booking_latitude, $value->booking_longitude, $userImageUrl, $section, $value->booking_created, $currentTyme);
         echo "2 Min Set";

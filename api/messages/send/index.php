@@ -51,8 +51,8 @@ if ($userID == "") {
         $target = get_user_meta($userIDTo , "firebaseTokenId" , true);
         $firstName = get_user_meta($userID , "first_name" , true);
         $lastName = get_user_meta($userID , "last_name" , true);
-        $title = "OLU App";
-        $message1 = $firstName. " Te ha enviado un mensaje nuevo";
+        $title = "OLU";
+        $message1 = "Tienes un nuevo mensaje de ". $firstName;
         sendMessageChat($target, $title, $message1 , $conversationID , $userID , $firstName , $message, $lastName,$userIDTo , strtotime($currentTime));
         $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
     }

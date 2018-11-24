@@ -3,6 +3,11 @@ include("../../wp-config.php");
 
 global $wpdb;
 
+
+/* $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+$txt = json_encode($_GET);
+fwrite($myfile, $txt);
+fclose($myfile); */
 date_default_timezone_set("America/Bogota");
 
 $userID = $_GET['userID'];
@@ -19,8 +24,11 @@ $selectGroup = $_GET['selectGroup'];
 $StartDateSet = $date . " " . $time;
 $strToTimeCheck = strtotime($StartDateSet);
 $currentTime = time();
-
-
+/* $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+$txt = json_encode($_GET);
+fwrite($myfile, $txt);
+fclose($myfile);
+ */
 //Prepairing Data
 if($category  == 8) {
     $endDateSet = date("Y-m-d H:i:s", strtotime('+90 minutes', strtotime($StartDateSet)));
@@ -82,7 +90,7 @@ if ($userID == "") {
                 } else {
                     $distance = distance(floatval($latitude), floatval($longitude), floatval($userLatitude), floatval($useLongitude), "K");
                 }
-                if ($distance <= 100000000 && $isOnline == 1 && $statusTrue == "true") {
+                if ($distance <= 100 && $isOnline == 1 && $statusTrue == "true") {
                    /*  $user = 'user_' . $value->ID;
                     $variable = get_field('categories', $user); */
                     if(empty($category)) {
@@ -120,7 +128,10 @@ if ($userID == "") {
                         $use = $value->data->ID;
                         $cat = $_GET['category'];
                         $getTest = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $use AND `category_id` = $cat");
-                      /*   if ($selectGroup == 1) {
+                        if($use == 241) {
+
+                        }
+                        if ($selectGroup == 1) {
                             $price = $getTest[0]->single_price;
                         } elseif ($selectGroup == 2) {
                             $price = $getTest[0]->group_price;
@@ -130,9 +141,15 @@ if ($userID == "") {
                             $price = $getTest[0]->group_price4;
                         } else {
                             $price = $getTest[0]->company_price;
+                        }
+                        if($price == "" || (int)$price <= 0) {
+                            $price = "0.000";
+                        }
+                       /*  if ($use == 241) {
+                            echo $price;
                         } */
 
-                        if ($getTest[0]->single_price != "") {
+                       /*  if ($getTest[0]->single_price != "") {
                             $price = $getTest[0]->single_price;
                         } elseif ($getTest[0]->group_price != "") {
                             $price = $getTest[0]->group_price;
@@ -142,10 +159,10 @@ if ($userID == "") {
                             $price = $getTest[0]->group_price4;
                         } else {
                             $price = $getTest[0]->company_price;
-                        }
+                        } */
                     }
                    
-                    // $getTest = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->ID AND `category_id` = $category");
+                    $getTest = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->ID AND `category_id` = $category");
                     if (!empty($getTest)) {
                         $terMyTerm = get_term($category, "category");
                         $termName = apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0);
@@ -154,7 +171,7 @@ if ($userID == "") {
                         $getBookingCheck = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `user_id` = $value->ID AND `booking_date` = '$dateCheck' AND `status` = 3 OR `status` = 4");
                         if($date != "") {
 
-                            foreach ($getBookingCheck as $getBookingCheckkey => $getBookingCheckvalue) {
+                            /* foreach ($getBookingCheck as $getBookingCheckkey => $getBookingCheckvalue) {
                                 $startDateCheck = $getBookingCheckvalue->booking_date . " " . $getBookingCheckvalue->booking_start;
                                 $endDateCheck = $getBookingCheckvalue->booking_date . " " . $getBookingCheckvalue->booking_end;
                                 if (($strToTimeCheck > strtotime($startDateCheck)) && ($strToTimeCheck < strtotime($endDateCheck))) {
@@ -168,7 +185,7 @@ if ($userID == "") {
                             $getMyAgendaAvailable = getMyAgendaAvailable($userID, $date, $time, $endDateAgenda);
                             if($getMyAgendaAvailable == "False") {
                                 $stat = "False";
-                            }
+                            } */
                         }
                     //Getiing Booking Check
 
@@ -207,12 +224,20 @@ if ($userID == "") {
                                 $terMyTerm = get_term($value1->category_id, "category");
                                 $arrayOrep[] = array("categoryID" => (int)$value1->category_id, "categoryName" => $terMyTerm->name, "singlePrice" => $value1->single_price, "groupPrice2" => $value1->group_price, "groupPrice3" => $value1->group_price3, "groupPrice4" => $value1->group_price4, "companyPrice" => $value1->company_price, );
                             }
-                            $finArr[] = array("userID" => $value->ID, "firstName" => $firstName, "lastName" => $lastName, "categoryName" => $termName, "categoryID" => (int)$category, "price" => $price, "userImageUrl" => $profileImageURL, "reviews" => getUserRating($trainerUserID), "latitude" => $latitude, "longitude" => $longitude , "timeDifference" => $difference, "category" => $arrayOrep);
+                            $finArr[] = array("userID" => $value->ID, "firstName" => $firstName, "lastName" => $lastName, "categoryName" => $termName, "categoryID" => (int)$category, "price" => $price, "userImageUrl" => $profileImageURL, "reviews" => getUserRating($trainerUserID), "latitude" => $latitude, "longitude" => $longitude , "timeDifference" => $difference, "category" => $arrayOrep , "distance" => $distance);
                         }
                     }
                 }
             }
             if (!empty($finArr)) {
+                foreach ($finArr as $key => $row) {
+                     // replace 0 with the field's index/key
+                    $dates[$key] = $row['distance'];
+                }
+                array_multisort($dates, SORT_ASC, $finArr);
+                /* foreach ($finArr as $i => $v) {
+                    unset($finArr[$i]['distance']);
+                } */
                 /* if ($offset == 1) {
                     $offset = 0;
                 } else {

@@ -3,7 +3,7 @@
 require_once "Mail.php";
 // require_once(dirname(__DIR__)."/html/wp-config.php");
 //SMTP SETUP
-$getData = file_get_contents("http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/cronData.php");
+echo $getData = file_get_contents("http://3.16.104.146/cronData.php");
 
 $host = "ssl://smtp.gmail.com";
 $username = "oluappinfo@gmail.com";

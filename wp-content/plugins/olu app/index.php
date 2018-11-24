@@ -36,11 +36,11 @@ global $wpdb;
 
 if($_GET['action'] == "bookings"){
 	$userID = $_GET['user_id'];
-	$bookingSource = "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/bookingHistory/?userID=".$userID."&status=";
+	$bookingSource = "http://3.16.104.146/api/bookingHistory/?userID=".$userID."&status=";
 	include("users/bookings.php");
 } elseif ($_GET['action'] == "wallet") {
 		$userID = $_GET['user_id'];
-		$bookingSource = "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/payment/paymentHistoryUser/?userID=". $userID ."&order=DESC&lang=es";
+		$bookingSource = "http://3.16.104.146/api/payment/paymentHistoryUser/?userID=". $userID ."&order=DESC&lang=es";
 		$bookingPayment = file_get_contents($bookingSource);
 		$bookingPayment = json_decode($bookingPayment);
 		include("users/wallet.php");
@@ -52,7 +52,7 @@ if($_GET['action'] == "bookings"){
 		$bookingPayment = $bookingSource[0];
 
 
-		$bookingSource1 = "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/bookingDetails/?userID=" . $userID . "&bookingID=" . $bookingID . "&language=es";
+		$bookingSource1 = "http://3.16.104.146/api/bookingDetails/?userID=" . $userID . "&bookingID=" . $bookingID . "&language=es";
 		$bookingPayment1 = file_get_contents($bookingSource1);
 		$bookingPayment1 = json_decode($bookingPayment1);
 		include("users/bookingDetails.php");
@@ -106,13 +106,13 @@ function trainer()
 		$bookingPayment = $bookingSource[0];
 
 
-		$bookingSource1 = "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/bookingDetails/?userID=" . $userID . "&bookingID=" . $bookingID . "&language=es";
+		$bookingSource1 = "http://3.16.104.146/api/bookingDetails/?userID=" . $userID . "&bookingID=" . $bookingID . "&language=es";
 		$bookingPayment1 = file_get_contents($bookingSource1);
 		$bookingPayment1 = json_decode($bookingPayment1);
 		include("trainer/bookingDetails.php");
 	} elseif ($_GET['action'] == "wallet") {
 		$userID = $_GET['user_id'];
-		$bookingSource = "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/bookingHistory/?userID=" . $userID . "&status=";
+		$bookingSource = "http://3.16.104.146/api/bookingHistory/?userID=" . $userID . "&status=";
 		include("trainer/bookings.php");
 	} elseif ($_GET['action'] == "reviews") {
 		$userID = $_GET['user_id'];

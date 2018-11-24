@@ -2,8 +2,6 @@
 
 include("../../../wp-config.php");
 global $wpdb;
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 //Collecting Data
 $data_body = json_decode(file_get_contents("php://input"), true);
 $userID = $data_body['userID'];

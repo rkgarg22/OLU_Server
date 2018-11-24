@@ -10,6 +10,7 @@ if ($userID == "") {
         $json = array("success" => 0, "result" => 0, "error" => "Usuario Inválido");
     } else {
         $requestId = get_user_meta($userID, "requestId", true);
+        $selectedCard = get_user_meta($userID, "selectedCard", true);
         $requestId = json_decode($requestId);
         $getType = gettype($requestId);
         if ($getType == "integer") {
@@ -20,6 +21,9 @@ if ($userID == "") {
             unset($requestId[$key]);
             $requestId = array_values($requestId);
             update_user_meta($userID, "requestId", json_encode($requestId));
+            if($requestIdNew == $selectedCard) {
+                update_user_meta($userID, "selectedCard", "");
+            }
             $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
         } else {
             $json = array("success" => 0, "result" => 0, "error" => "Invalid Request ID");

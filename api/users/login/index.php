@@ -7,14 +7,23 @@ $userName = $data_body["emailAddress"];
 $password = $data_body["password"];
 $firebaseTokenId = $data_body["firebaseTokenId"];
 $deviceType = $data_body["deviceType"];
+$userType = $data_body["userType"];
 /* $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
 $txt = file_get_contents("php://input");
 fwrite($myfile, $txt);
 fclose($myfile); */
+if($userType == 1) {
+    $role = "contributor";
+} else {
+    $role = "subscriber";
+}
 
 
 if ($userName != "" && $password != "") {
-    if (email_exists($userName)) {
+
+    $user = get_user_by('login', $userName);
+    // && $user->roles[0] == $role
+    if (email_exists($userName) && $user->roles[0] == $role) {
         $user = get_user_by('login', $userName);
         
         $myUserRole = $user->roles[0];
@@ -51,8 +60,8 @@ if ($userName != "" && $password != "") {
                     if(!empty($isApprove) && $isApprove == "yes") {
                         $isApprove = 1;
                     } else {
-                        // $isApprove = 0;
-                        $isApprove = 1;
+                        $isApprove = 0;
+                        // $isApprove = 1;
                     }
                 } elseif ($myUserRole == "subscriber") {
                     $userRole = 2; //User
@@ -76,7 +85,7 @@ if ($userName != "" && $password != "") {
                 $json = array("success" => 1, "result" => json_decode($arrayData), "error" => "No se ha encontrado ningún error");
 
             } else {
-                $json = array("success" => 0, "result" => null, "error" => "contraseña invalida");
+                $json = array("success" => 0, "result" => null, "error" => "Por favor revisa la contraseña.");
             }
 
     } else {

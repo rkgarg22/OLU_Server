@@ -52,8 +52,8 @@ if ($userID == "") {
                 $lastNameU = get_user_meta($getBookingDetails[0]->booking_from, "last_name", true);
                 $phoneU = get_user_meta($getBookingDetails[0]->booking_from, "phone", true);
                 $userImageUrlU = get_user_meta($getBookingDetails[0]->booking_from, "userImageUrl", true);
-                $title = "OLU Fitness APP";
-                $message = "Su reserva con " . $firstNameU . " ha sido cancelado por el usuario";
+                $title = "OLU";
+                $messageUser2 = $firstNameU . " ha cancelado la actividad";
                 sendMessageData($firebaseTokenId, $title, $messageUser2, $getBookingDetails[0]->id, $firstNameU, $lastlastNameUName, $getBookingDetails[0]->category_id, $categoryData->name, $getBookingDetails[0]->booking_date, $phoneU, $getBookingDetails[0]->booking_start, $getBookingDetails[0]->booking_end, 7, $getBookingDetails[0]->booking_address, $getBookingDetails[0]->booking_latitude, $getBookingDetails[0]->booking_longitude, $userImageUrlU, $section, $getBookingDetails[0]->booking_created, $curent);
                 $wpdb->query("UPDATE `wtw_booking` SET `status` = 7 , `booking_action_time` = '$curent' WHERE `id` = $bookingID");
                 $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
@@ -90,13 +90,15 @@ if ($userID == "") {
 
                     $userImageUrl = get_user_meta($getBookingDetails[0]->user_id, "userImageUrl", true);
                     $firebaseTokenId = get_user_meta($getBookingDetails[0]->booking_from, "firebaseTokenId", true);
-                    $title = "OLU Fitness APP";
+                    $title = "OLU";
                     if ($status == 2) {
-                        $message = "Su reserva de " . $firstName . " ha sido cancelado, por favor intente de nuevo";
+                        $message = "¡Lo sentimos! " . $firstName . " no puede realizar la actividad…";
                     } else {
-                        $message = "Su reserva de " . $firstName . " ha sido aceptado";
+                        $message = "Tu OLU " . $firstName . " ha confirmado la reserva";
                     }
-                    sendMessageData($firebaseTokenId, $title, $message, $getBookingDetails[0]->id, $firstName, $lastName, $getBookingDetails[0]->category_id, $categoryData->name, $getBookingDetails[0]->booking_date, $phone, $getBookingDetails[0]->booking_start, $getBookingDetails[0]->booking_end, $status, $getBookingDetails[0]->booking_address, $getBookingDetails[0]->booking_latitude, $getBookingDetails[0]->booking_longitude,  $userImageUrl, $section, $getBookingDetails[0]->booking_created, $curent);
+                    if($getBookingDetails[0]->status  != 6) {
+                        sendMessageData($firebaseTokenId, $title, $message, $getBookingDetails[0]->id, $firstName, $lastName, $getBookingDetails[0]->category_id, $categoryData->name, $getBookingDetails[0]->booking_date, $phone, $getBookingDetails[0]->booking_start, $getBookingDetails[0]->booking_end, $status, $getBookingDetails[0]->booking_address, $getBookingDetails[0]->booking_latitude, $getBookingDetails[0]->booking_longitude, $userImageUrl, $section, $getBookingDetails[0]->booking_created, $curent);
+                    }
                 //user1
                     $wpdb->query("UPDATE `wtw_booking` SET `status` = $status , `booking_action_time` = '$curent' WHERE `id` = $bookingID");
                     $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
@@ -115,7 +117,7 @@ if ($userID == "") {
                         $lastName = get_user_meta($getBookingDetails[0]->user_id, "last_name", true);
                         $firebaseTokenIdUser2 = get_user_meta($getBookingDetails[0]->booking_from, "firebaseTokenId", true);
                         $userImageUrl = get_user_meta($getBookingDetails[0]->user_id, "userImageUrl", true);
-                        $title = "OLU Fitness APP";
+                        $title = "OLU";
                         $messageUser2 = "Su reserva ha sido cancelada por " . $firstNameUser2 . "";
                     //user2
 
@@ -131,7 +133,7 @@ if ($userID == "") {
                     $lastName = get_user_meta($getBookingDetails[0]->user_id, "last_name", true);
                     $firebaseTokenId = get_user_meta($getBookingDetails[0]->user_id, "firebaseTokenId", true);
                     $userImageUrl = get_user_meta($getBookingDetails[0]->booking_from, "userImageUrl", true);
-                    $title = "OLU Fitness APP";
+                    $title = "OLU";
                     $message = "Su reserva de " . $firstName . " ha expirado, intente de nuevo";
                     sendMessageData($firebaseTokenId, $title, $message, $getBookingDetails[0]->id, $firstName, $lastName, $getBookingDetails[0]->category_id, $categoryData->name, $getBookingDetails[0]->booking_date, $phone, $getBookingDetails[0]->booking_start, $getBookingDetails[0]->booking_end, 2, $getBookingDetails[0]->booking_address, $getBookingDetails[0]->booking_latitude, $getBookingDetails[0]->booking_longitude, $userImageUrl, $section, $getBookingDetails[0]->booking_created, $curent);
                     //user1
@@ -140,7 +142,7 @@ if ($userID == "") {
                     $lastName2 = get_user_meta($getBookingDetails[0]->user_id, "last_name", true);
                     $firebaseTokenIdUser2 = get_user_meta($getBookingDetails[0]->booking_from, "firebaseTokenId", true);
                     $userImageUrl = get_user_meta($getBookingDetails[0]->user_id, "userImageUrl", true);
-                    $title = "OLU Fitness APP";
+                    $title = "OLU";
                     $messageUser2 = "Su reserva de " . $firstNameUser2 . " ha expirado, intente de nuevo";
                     //user2
                     sendMessageData($firebaseTokenIdUser2, $title, $messageUser2, $getBookingDetails[0]->id, $firstNameUser2, $lastName2, $getBookingDetails[0]->category_id, $categoryData->name, $getBookingDetails[0]->booking_date, $phone, $getBookingDetails[0]->booking_start, $getBookingDetails[0]->booking_end, 2, $getBookingDetails[0]->booking_address, $getBookingDetails[0]->booking_latitude, $getBookingDetails[0]->booking_longitude, $userImageUrl, $section, $getBookingDetails[0]->booking_created, $curent);

@@ -9,6 +9,7 @@ $longitude = get_user_meta($userID, "longitude", true);
 $gender = get_user_meta($userID, "gender", true);
 $phone = get_user_meta($userID, "phone", true);
 $dob = get_user_meta($userID, "dob", true);
+echo $isApprove = get_user_meta($userID, "isApprove", true);
 ?>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/style.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/bootstrap.min.css' type='text/css'/>
@@ -169,6 +170,13 @@ $dob = get_user_meta($userID, "dob", true);
                             }
                             ?>
                     </table>
+                    <?php 
+                        if($isApprove != "yes") {
+                            ?>
+                            <div class="col-lg-6"><button class="btn btn-success" onclick="approveMyTrainer(<?php echo $userID; ?>)">Accept</button></div>
+                            <?php
+                        }
+                    ?>
                    
                 </div>
 

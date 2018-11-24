@@ -1,6 +1,5 @@
 <?php
 include("../../../wp-config.php");
-
 $userID = $_GET['userID'];
 $order = $_GET['order'];
 $isPaid = $_GET['isPaid'];
@@ -13,14 +12,15 @@ if ($userID == "") {
     if (empty($user)) {
         $json = array("success" => 0, "result" => array(), "error" => "Usuario Inválido Invalid");
     } else {
-        // echo "SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = 1 ORDER BY `booking_date` $order";
+        // echo "SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = 1 AND `notAttended` != 1 OR `user_id` = $userID AND `isPaid` = 1 ORDER BY `booking_date` $order";
         $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = 1 AND `notAttended` != 1 OR `user_id` = $userID AND `isPaid` = 1 ORDER BY `booking_date` $order");
-     
+        
         if (empty($getUserDataBooking)) {
             $json = array("success" => 0, "result" => array(), "error" => "Datos no encontrados");
         } else {
             $bookingArr = array();
             foreach ($getUserDataBooking as $getUserDataBookingkey => $getUserDataBookingvalue) {
+                
                 $firstNameC = get_user_meta($getUserDataBookingvalue->booking_from, "first_name", true);
                 $lastNameC = get_user_meta($getUserDataBookingvalue->booking_from, "last_name", true);
                 $phone = get_user_meta($getUserDataBookingvalue->booking_from, "phone", true);
@@ -31,18 +31,22 @@ if ($userID == "") {
                 //Booking Status
                 $terMyTerm = get_term($getUserDataBookingvalue->category_id, "category");
                 // echo apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0);
-                $price = $wpdb->get_results("SELECT * FROM `wtw_usermeta` WHERE `user_id` = $getUserDataBookingvalue->user_id AND `meta_value` = $getUserDataBookingvalue->booking_price");
-                if ($price[0]->meta_key == "single") {
+               
+                if($isPaid == $getData[0]->booking_paid) {
+                if ($getUserDataBookingvalue->booking_for == "single") {
                     $section = 1;
-                } elseif ($price[0]->meta_key == "business") {
+                } elseif ($getUserDataBookingvalue->booking_for == "business") {
                     $section = 2;
+                } elseif ($getUserDataBookingvalue->booking_for == "business3") {
+                    $section = 4;
+                } elseif ($getUserDataBookingvalue->booking_for == "business4") {
+                    $section = 5;
                 } else {
                     $section = 3;
                 }
-                if($isPaid == $getData[0]->booking_paid) {
-                    $getMyPrice = getBookingPrice($getUserDataBookingvalue->id) / 100 * 72;
+                   $getMyPrice = getBookingPriceTrainer($getUserDataBookingvalue->id) / 100 * 72;
                     if (strpos($getMyPrice, ".") !== false) {
-                        $price = "$getMyPrice";
+                        $price = number_format((float)$getMyPrice, 3, '.', '');
                     } else {
                         $price = $getMyPrice.".000";
                     }

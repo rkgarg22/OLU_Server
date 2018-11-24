@@ -691,7 +691,7 @@ function sendMessageData($target, $title, $message , $bookingID, $firstName, $la
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 	$result = curl_exec($ch);
-/* 	echo "<pre>";
+	/* echo "<pre>";
 		print_r(json_decode($result));
 	echo "</pre>"; */
 	if ($result === false) {
@@ -768,10 +768,17 @@ function getUserRating($user) {
 
 function getUserToken($userID) {
 	$getUserToekn = get_user_meta($userID, "requestId", true);
-	$requestId = json_decode($getUserToekn);
-	if(empty($requestId)) {
+
+	
+	if(empty($getUserToekn) || $getUserToekn == "") {
 		return "False";
 	} else {
+		$requestId = json_decode($getUserToekn);
+		$getType = gettype($requestId);
+		if ($getType == "integer") {
+			$requestId = (array)$requestId;
+		} 
+		$i=0;
 		foreach ($requestId as $key => $value) {
 			$login = "fcec4c9fd9ea26079d9302b2424d38ea";
 			$seed = date('c');
@@ -800,6 +807,10 @@ function getUserToken($userID) {
 			} else {
 				return "False";
 			}
+			$i++;
+		}
+		if($i == 0) {
+			return "False";
 		}
 		
 	}
@@ -897,6 +908,8 @@ function getUserWalletBefore($userID,$bookingID)
 	}
 }
 
+
+
 function getBookingPrice($bookingID) {
 	global $wpdb;
 	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
@@ -930,21 +943,19 @@ function getBookingPriceTrainer($bookingID) {
 	global $wpdb;
 	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
 	foreach ($useMoney as $key => $value) {
-		
-		$getBookingDetails = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->user_id AND `category_id` = $value->category_id");
-
-		if ($value->booking_for == "single") {
-			$metaKey = "single_price";
-		} elseif ($value->booking_for == "business") {
-			$metaKey = "group_price";
-		} elseif ($value->booking_for == "business3") {
-			$metaKey = "group_price3";
-		} elseif ($value->booking_for == "business4") {
-			$metaKey = "group_price4";
-		} else {
-			$metaKey = "company_price";
+		if ($value->promocode != "") {
+			$getPromoCode = $wpdb->get_results("SELECT * FROM `wtw_promocode` WHERE `name` = '$value->promocode'");
+			$valueCode = 100 - $getPromoCode[0]->discount;
 		}
-		return $getBookingDetails[0]->$metaKey;
+		
+		$getBookingDetails = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $bookingID");
+
+
+		if (isset($valueCode)) {
+			return ($valueCode / 100) * $getBookingDetails[0]->booking_price;
+		} else {
+			return $getBookingDetails[0]->booking_price;
+		}
 	}
 }
 
@@ -953,6 +964,8 @@ function collectAPI($userID , $price , $token, $payer) {
 	$token = $token;
 	$login = "fcec4c9fd9ea26079d9302b2424d38ea";
 	$seed = date('c');
+
+	$generateMyRefNumber = generateMyRefNumber();
 	if (function_exists('random_bytes')) {
 		$nonce = bin2hex(random_bytes(16));
 	} elseif (function_exists('openssl_random_pseudo_bytes')) {
@@ -964,7 +977,7 @@ function collectAPI($userID , $price , $token, $payer) {
 	$nextmonth = date('c', strtotime(' +1 month'));
 	$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
 
-	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ' , "payment": { "reference": "1212", "description": "Pago básico de prueba", "amount": { "currency": "USD", "total": "' . $price . '" } }}';
+	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "USD", "total": "' . $price . '" } }}';
 	$ch = curl_init();
 	$agents = array(
 		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1',
@@ -988,7 +1001,8 @@ function collectAPI($userID , $price , $token, $payer) {
 		'moneyPlan' => "custom",
 		'moneyValue' => $price,
 		'moneyAdded' => $price,
-		'created_date' => date("Y-m-d H:i:s")
+		'created_date' => date("Y-m-d H:i:s"),
+		'ref_num' => $generateMyRefNumber
 	));
 	return $result->requestId;
 }
@@ -1304,14 +1318,14 @@ function getMyAgendaAvailable($userID , $agenda_datee , $agenda_start_time , $ag
 				
 		} elseif ($value->agenda_type == 0) {
 			if (date("Y-m-d", strtotime($agenda_date)) == $value->agenda_date) {
-				if ((strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
+				if ((strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 				if ((strtotime($agendaBookingend_date . " " . $agenda_end_time) >= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_end_time) <= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 
-				if ((strtotime($value->agenda_date . " " . $value->agenda_start_time) <= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($value->agenda_date . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($value->agenda_date . " " . $value->agenda_start_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($value->agenda_date . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
 				if ((strtotime($value->agenda_end_date . " " . $value->agenda_end_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($value->agenda_end_date . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
@@ -1584,6 +1598,20 @@ function getMyAgendaDetails($userID, $agenda_date)
 		}
 	}
 	return $checkArray;
+}
+
+function generateMyRefNumber() {
+
+	global $wpdb;
+	for ($i=0; $i < 15 ; $i++) {
+		$digits = 5;
+		$stringRandom = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
+		$count = $wpdb->get_var("SELECT count(`id`) FROM `wtw_add_money` WHERE `ref_num` = '$stringRandom'");
+		if($count == 0) {
+			return $stringRandom;
+			break;
+		}
+	}
 }
 
 
