@@ -43,17 +43,20 @@ if ($userID == "") {
                 $processURL = "";
                 $message = "Error";
             }
-            $genToken = array("requestId" => $requestId , "processURL" => $processURL , "message" => $message);
+            $genToken = array("requestId" => "$requestId" , "processURL" => $processURL , "message" => $message);
            $token = 0;
             $cardDetails = array();
             // $cardDetails[] = array("token" => "", "cardNumber" => "", "cardType" => "", "cardExpire" => "" , "message" => "No Data");
         } else {
-            $requestId = json_decode($getUserToekn);
+
+            $selectedCard = get_user_meta($userID, "selectedCard", true);
+           /*  $requestId = json_decode($getUserToekn);
             $getType = gettype($requestId);
             if ($getType == "integer") {
                 $requestId = (array)$requestId;
-            } 
-            foreach ($requestId as $key => $value) {
+            }  */
+            $reqID = (array)$selectedCard;
+            foreach ($reqID as $key => $value) {
                 $genToken = array("requestId" => "", "processURL" => "", "message" => "No Data");
                 $authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" }}';
                 $ch = curl_init();
@@ -75,6 +78,7 @@ if ($userID == "") {
                 }
             }
             if(empty($cardDetails)) {
+                $generateMyRefNumber = generateMyRefNumber();
                 $authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },"subscription" : { "reference": "' . $generateMyRefNumber . '", "description": "Pago básico de prueba", "fields" : [] },"expiration": "' . $nextmonth . '", "returnUrl": "http://ec2-13-58-57-186.us-east-2.compute.amazonaws.com/api/payment/return/", "ipAddress": "127.0.0.1", "userAgent": "PlacetoPay Sandbox"}';
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/session/");
@@ -84,6 +88,7 @@ if ($userID == "") {
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
                 $result = curl_exec($ch);
                 $result = json_decode($result);
+                
                 if ($result->status->status == "OK") {
                     $requestId = $result->requestId;
                     $processURL = $result->processUrl;
@@ -94,7 +99,7 @@ if ($userID == "") {
                     $processURL = "";
                     $message = "Error";
                 }
-                $genToken = array("requestId" => $requestId, "processURL" => $processURL, "message" => $message);
+                $genToken = array("requestId" => "$requestId", "processURL" => $processURL, "message" => $message);
                 $tokenCard = "";
                 $cardNumber = "";
                 $cardType = "";

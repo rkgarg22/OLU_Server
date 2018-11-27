@@ -12,7 +12,7 @@ if ($userID == "") {
         $requestId = get_user_meta($userID , "requestId" , true);
         $requestId = json_decode($requestId);
         $getType = gettype($requestId);
-        if($getType == "integer") {
+        if($getType == "integer" || $requestId == "") {
             $requestId = (array)$requestId;
             $requestId[] = $requestIdNew;
         } else {

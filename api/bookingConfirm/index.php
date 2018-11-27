@@ -59,7 +59,7 @@ if ($userID == "") {
                 $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
                 if($isPaid == 1) {
                     $myWallet = getUserWallet($userID);
-                    $getThisBooking = getBookingPrice($getBookingDetails[0]->id);
+                    $getThisBooking = getBookingPrice($getBookingDetails[0]->id) + 2;
                     $getPaymerDetails = getPaymerDetails($userID);
                     if ($myWallet < $getThisBooking) {
                         $price = $getThisBooking - $myWallet;
@@ -68,6 +68,8 @@ if ($userID == "") {
                     } else {
                         $price = $getThisBooking;
                     }
+
+                    $wpdb->query("UPDATE `wtw_add_money` SET `bookingID` = $bookingID WHERE `txn_id` = '" . $collectAPI . "'");
                     $wpdb->insert('wtw_booking_price', array(
                         'booking_id' => $getBookingDetails[0]->id,
                         'booking_price' => $getThisBooking,

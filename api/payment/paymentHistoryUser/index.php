@@ -23,14 +23,15 @@ if ($userID == "") {
             } else {
                 $categoryName = "OLU Standar";
             }
-            $arrayGet[]  = array("date" => date("d/m/Y" , strtotime($value->created_date)) , "categoryName" => $categoryName , "amount" => $value->moneyValue.".000" , "time" => date ("H:i:s", strtotime($value->created_date)), "bookingTime" => strtotime($value->created_date));
+            $arrayGet[]  = array("date" => date("d/m/Y" , strtotime($value->created_date)) , "categoryName" => $categoryName , "amount" => $value->moneyValue.".000" , "time" => date ("H:i:s", strtotime($value->created_date)), "bookingTime" => strtotime($value->created_date) , "reference" => "$value->ref_num");
             // $arrayGet[] = array("paymentID" => $value->id , "moneyPlan" => $value->moneyPlan , "moneyValue" => $value->moneyValue , "txnID" => $value->txn_id , "orderDate" => $value->created_date , "unix" => strtotime($value->created_date), "userID" => "", "bookingID" => "", "date" => "", "category" => "", "categoryID" => "", "firstName" => "", "lastName" => "", "bookingStart" => "", "bookingEnd" => "", "bookingType" => "", "phone" => "", "amount" => "" , "recordType" => 1, "bookingLatitude" => "", "bookingLongitude" => "", "bookingAddress" => "", "userImageUrl" => "" , "price" => "" , "categoryName" => "OLU  Standar" , "date"=> $value->created_date);
         }
 
         //Booking Section
-        //echo "SELECT * FROM `wtw_booking` WHERE `booking_from` = $userID AND `status` = 1 OR `booking_from` = $userID AND `isPaid` = 1 ORDER BY `booking_date` $order ";
+        // echo "SELECT * FROM `wtw_booking` WHERE `booking_from` = $userID AND `status` = 1 OR `booking_from` = $userID AND `isPaid` = 1 ORDER BY `booking_date` $order ";
         $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `booking_from` = $userID AND `status` = 1 OR `booking_from` = $userID AND  `isPaid` = 1 ORDER BY `booking_date` DESC ");
         foreach ($getUserDataBooking as $key => $value) {
+            
             $firstNameC = get_user_meta($value->user_id, "first_name", true);
             $lastNameC = get_user_meta($value->user_id, "last_name", true);
             $phone = get_user_meta($value->user_id, "phone", true);
@@ -38,6 +39,13 @@ if ($userID == "") {
             $userCheck = $value->user_id;
             $terMyTerm = get_term($value->category_id, "category");
             $price = $wpdb->get_results("SELECT * FROM `wtw_usermeta` WHERE `user_id` = $value->user_id AND `meta_value` = $value->booking_price");
+            $refID = $wpdb->get_results("SELECT * FROM `wtw_add_money` WHERE `bookingID` = $value->id");
+            if(!empty($refID)) {
+                (string)$ref_num = $refID[0]->ref_num;
+
+            } else {
+                $ref_num = "";
+            }
             if ($price[0]->meta_key == "single") {
                 $section = 1;
             } elseif ($price[0]->meta_key == "business") {
@@ -45,12 +53,12 @@ if ($userID == "") {
             } else {
                 $section = 3;
             }
-           $myWalletThen =  getUserWalletBefore($value->booking_from , $value->id);
-            $getBookingPrice = getBookingPrice($value->id);
+            $myWalletThen =  getUserWalletBefore($value->booking_from , $value->id);
+          $getBookingPrice = getBookingPriceTrainer($value->id);
             if($myWalletThen < $getBookingPrice) {
                 if($myWalletThen < 0) {
                     $myWalletThen = 0;
-                }
+                } 
                 $price = $getBookingPrice - $myWalletThen;
           /*       echo $getBookingPrice;
                 echo "<br>";
@@ -60,7 +68,7 @@ if ($userID == "") {
                 echo "<br>";
                 echo apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0);
                 echo "<br>"; */
-                $arrayGet[] = array("date" => date("d/m/Y", strtotime($value->booking_date)), "categoryName" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "amount" => $price . ".000", "time" => date("H:i:s", strtotime($value->booking_action_time)), "bookingTime" => strtotime($value->booking_action_time));
+                $arrayGet[] = array("date" => date("d/m/Y", strtotime($value->booking_date)), "categoryName" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "amount" => $price . ".000", "time" => date("H:i:s", strtotime($value->booking_action_time)), "bookingTime" => strtotime($value->booking_action_time), "reference" => $ref_num);
             } else {
                 $price = $getBookingPrice;
             }

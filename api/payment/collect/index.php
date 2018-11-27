@@ -28,13 +28,13 @@ if ($userID == "") {
     } else {
         //Defining Price
             if($planID == 1) {
-                $priceValue = 300;
+                $priceValue = "300000";
                 $priceGet = 315;
             } elseif($planID == 2){
-                $priceValue = 600;
+                $priceValue = "600000";
                 $priceGet = 645;
             } else {
-                $priceValue = 900;
+                $priceValue = "900000";
                 $priceGet = 990;
             }
         //Defining Price
@@ -70,7 +70,7 @@ if ($userID == "") {
                 $nonceBase64 = base64_encode($nonce);
                 $nextmonth = date('c', strtotime(' +1 month'));
                 $tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
-                $collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($result->request->payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "10000" } }}';
+               $collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($result->request->payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "'. $priceValue .'" } }}';
                 $ch = curl_init();
                 $agents = array(
                     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1',
@@ -88,18 +88,33 @@ if ($userID == "") {
                 $result = curl_exec($ch);
                 $result = json_decode($result);
                 curl_close($ch);
+                $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+                $txt = json_encode($result) . $collectData;
+                fwrite($myfile, $txt);
+                fclose($myfile);
+                if($result->status->status == "APPROVED") {
 
-                $json = array("success" => 1, "result" => $result->requestId, "error" => "No se ha encontrado ningún error");
-                $wpdb->insert('wtw_add_money', array(
-                    'user_id' => $userID,
-                    'txn_id' => $result->requestId,
-                    'moneyPlan' => $planID,
-                    'moneyValue' => $priceValue,
-                    'moneyAdded' => $priceGet,
-                    'created_date' => $current,
-                    'ref_num' => $generateMyRefNumber
-                ));
-                break;
+                    $json = array("success" => 1, "result" => $result->requestId, "error" => "No se ha encontrado ningún error");
+                    $wpdb->insert('wtw_add_money', array(
+                        'user_id' => $userID,
+                        'txn_id' => $result->requestId,
+                        'moneyPlan' => $planID,
+                        'moneyValue' => str_replace("00000" , "00" , $priceValue),
+                        'moneyAdded' => $priceGet,
+                        'created_date' => $current,
+                        'ref_num' => $generateMyRefNumber
+                    ));
+                    break;
+                } else {
+                    foreach ($result->payment as $key => $value) {
+                        if($value->reference == $generateMyRefNumber) {
+                            $message = $value->status->message;
+                        }
+                    }
+                    $json = array("success" => 0, "result" => "", "error" => $message);
+                   
+                    break;
+                }
             }
         }
        

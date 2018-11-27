@@ -20,7 +20,11 @@ if ($userID == "") {
             $key = array_search($requestIdNew, $requestId);
             unset($requestId[$key]);
             $requestId = array_values($requestId);
-            update_user_meta($userID, "requestId", json_encode($requestId));
+            if(count($requestId) == 0){
+                update_user_meta($userID, "requestId", "");
+            } else {
+                update_user_meta($userID, "requestId", json_encode($requestId));   
+            }
             if($requestIdNew == $selectedCard) {
                 update_user_meta($userID, "selectedCard", "");
             }

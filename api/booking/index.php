@@ -107,7 +107,7 @@ if ($userID == "") {
                     $promo = "";
                 }
                 //Promo code
-                if ($bookingCheck != "False") {
+                if ($bookingCheck != "False" && strpos($bookingCheck, "False") == false) {
                     $wpdb->insert('wtw_booking', array(
                         'user_id' => $_GET['bookinguserID'],
                         'category_id' => $categoryID,
@@ -144,7 +144,12 @@ if ($userID == "") {
                     update_user_meta($userID, "promoCode", "");
                     $json = array("success" => 1, "result" => 1, "error" => "No Error Found", "isTokenSaved" => 1 , "paymentRequire" => $paymentStatus);
             } else {
-                    $json = array("success" => 0, "result" => 0, "error" => "Sin tarjetas guardadas", "isTokenSaved" => 0, "paymentRequire" => 0);
+                if($bookingCheck == "False") {
+                    $mes = "Sin tarjetas guardadas";
+                } else {
+                    $mes = str_replace("False" , '' , $bookingCheck);
+                }
+                    $json = array("success" => 0, "result" => 0, "error" => $mes, "isTokenSaved" => 0, "paymentRequire" => 0);
                 }
             } 
         }

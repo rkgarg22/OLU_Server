@@ -768,18 +768,16 @@ function getUserRating($user) {
 
 function getUserToken($userID) {
 	$getUserToekn = get_user_meta($userID, "requestId", true);
+	$selectedCard = get_user_meta($userID, "selectedCard", true);
 
 	
-	if(empty($getUserToekn) || $getUserToekn == "") {
+	if(empty($selectedCard) || $selectedCard == "") {
 		return "False";
 	} else {
-		$requestId = json_decode($getUserToekn);
-		$getType = gettype($requestId);
-		if ($getType == "integer") {
-			$requestId = (array)$requestId;
-		} 
+
+		$reqID = (array)$selectedCard;
 		$i=0;
-		foreach ($requestId as $key => $value) {
+		foreach ($reqID as $key => $value) {
 			$login = "fcec4c9fd9ea26079d9302b2424d38ea";
 			$seed = date('c');
 			if (function_exists('random_bytes')) {
@@ -805,7 +803,7 @@ function getUserToken($userID) {
 			if ($result->status->status == "APPROVED") {
 				return $tokenCard = $result->subscription->instrument[0]->value;
 			} else {
-				return "False";
+				return "False". $result->status->message;
 			}
 			$i++;
 		}
@@ -846,10 +844,12 @@ function getUserWallet($userID) {
 		} else {
 			$metaKey = "company_price";
 		}
+
+		$priceSection = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $value->id");
 		if (isset($valueCode)) {
-			$bookingPrice =   ($valueCode / 100) * $getBookingDetails[0]->$metaKey;
+			$bookingPrice =   ($valueCode / 100) * $priceSection[0]->booking_price;
 		} else {
-			$bookingPrice =  $getBookingDetails[0]->$metaKey;
+			$bookingPrice = $priceSection[0]->booking_price;
 		}
 		$initBooking = $initBooking + $bookingPrice;
 	}
@@ -866,7 +866,8 @@ function getUserWalletBefore($userID,$bookingID)
 	$initWaller = 0;
 	$initBooking = 0;
 	$getBookingDet = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
-	$createc = $getBookingDet[0]->booking_action_time;
+	// $createc = $getBookingDet[0]->booking_action_time;
+	$createc = date("Y-m-d H:i:s", strtotime($getBookingDet[0]->booking_action_time) - 20);
 	// echo  "SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID AND `created_date` < '$createc'";
 	$getMyMoney = $wpdb->get_results("SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID AND `created_date` < '$createc'");
 	
@@ -893,10 +894,11 @@ function getUserWalletBefore($userID,$bookingID)
 		} else {
 			$metaKey = "company_price";
 		}
+		$priceSection = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $value->id");
 		if (isset($valueCode)) {
-			$bookingPrice = ($valueCode / 100) * $getBookingDetails[0]->$metaKey;
+			$bookingPrice = ($valueCode / 100) * $priceSection[0]->booking_price;
 		} else {
-			$bookingPrice = $getBookingDetails[0]->$metaKey;
+			$bookingPrice = $priceSection[0]->booking_price;
 		}
 		$initBooking = $initBooking + $bookingPrice;
 	}
@@ -960,6 +962,7 @@ function getBookingPriceTrainer($bookingID) {
 }
 
 function collectAPI($userID , $price , $token, $payer) {
+	
 	global $wpdb;
 	$token = $token;
 	$login = "fcec4c9fd9ea26079d9302b2424d38ea";
@@ -976,8 +979,9 @@ function collectAPI($userID , $price , $token, $payer) {
 	$nonceBase64 = base64_encode($nonce);
 	$nextmonth = date('c', strtotime(' +1 month'));
 	$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
-
-	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "USD", "total": "' . $price . '" } }}';
+	$price1 = $price;
+	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "' . $price1 . '000" } }}';
+	// echo $collectData;
 	$ch = curl_init();
 	$agents = array(
 		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1',
@@ -986,6 +990,9 @@ function collectAPI($userID , $price , $token, $payer) {
 		'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_7; da-dk) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1'
 
 	);
+	/* echo  "<pre>";
+		print_r($agents);
+	echo  "</pre>"; */
 	curl_setopt($ch, CURLOPT_USERAGENT, $agents[array_rand($agents)]);
 	curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/collect/");
 	curl_setopt($ch, CURLOPT_POST, count(json_decode($collectData)));
@@ -995,16 +1002,32 @@ function collectAPI($userID , $price , $token, $payer) {
 	$result = curl_exec($ch);
 	$result = json_decode($result);
 	curl_close($ch);
-	$wpdb->insert('wtw_add_money', array(
-		'user_id' => $userID,
-		'txn_id' => $result->requestId,
-		'moneyPlan' => "custom",
-		'moneyValue' => $price,
-		'moneyAdded' => $price,
-		'created_date' => date("Y-m-d H:i:s"),
-		'ref_num' => $generateMyRefNumber
-	));
-	return $result->requestId;
+$myfile = fopen(ABSPATH."newfile.txt", "w") or die("Unable to open file!");
+                $txt = $collectData.json_encode($result);
+                fwrite($myfile, $txt);
+                fclose($myfile);
+	if ($result->status->status == "APPROVED") {
+/* 	echo "<pre>";
+		print_r($result);
+	echo "</pre>"; */
+		$wpdb->insert('wtw_add_money', array(
+			'user_id' => $userID,
+			'txn_id' => $result->requestId,
+			'moneyPlan' => "custom",
+			'moneyValue' => $price,
+			'moneyAdded' => $price,
+			'created_date' => date("Y-m-d H:i:s"),
+			'ref_num' => $generateMyRefNumber
+		));
+		return $result->requestId;
+	} else {
+		foreach ($result->payment as $key => $value) {
+			if ($value->reference == $generateMyRefNumber) {
+				$message = $value->status->message;
+			}
+		}
+		return "False".$message;
+	}
 }
 
 function getPaymerDetails($userID) {
@@ -1605,7 +1628,8 @@ function generateMyRefNumber() {
 	global $wpdb;
 	for ($i=0; $i < 15 ; $i++) {
 		$digits = 5;
-		$stringRandom = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
+		$stringRandom = time();
+		// $stringRandom = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
 		$count = $wpdb->get_var("SELECT count(`id`) FROM `wtw_add_money` WHERE `ref_num` = '$stringRandom'");
 		if($count == 0) {
 			return $stringRandom;

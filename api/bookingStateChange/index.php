@@ -34,28 +34,47 @@ if ($userID == "") {
                 $phone = get_user_meta($dataMy[0]->user_id, "phone", true);
                 $firebaseTokenId = get_user_meta($dataMy[0]->booking_from, "firebaseTokenId", true);
                 $title = "OLU";
-                if ($state == 1) {
+                if ($state == 4) {
                     // echo $dataMy[0]->booking_from;
                     $myWallet = getUserWallet($dataMy[0]->booking_from);
-                    (int)$getThisBooking = getBookingPrice($bookingID);
+                    (int)$getThisBooking = getBookingPrice($bookingID) + 2;
                     $getPaymerDetails = getPaymerDetails($dataMy[0]->booking_from);
-                    if ($myWallet < (int)$getThisBooking) {
-                        $price = (int) $getThisBooking - $myWallet;
-                        $token = getUserToken($dataMy[0]->booking_from);
-                        $collectAPI = collectAPI($dataMy[0]->booking_from, $price, $token, $getPaymerDetails);
-                    }
-                    $wpdb->insert('wtw_booking_price', array(
-                        'booking_id' => $bookingID,
-                        'booking_price' => $getThisBooking,
-                        'booking_paid' => 0
-                    ));
-                    update_user_meta($dataMy[0]->user_id , "isOnline" , 1 );
-                    $wpdb->query("UPDATE `wtw_booking` SET `isPaid` = 1 WHERE `id` = $bookingID");
-                        $message = " Se finaliza actividad";
+                    $token = getUserToken($dataMy[0]->booking_from);
+
+                        if (strpos($token, "False") !== false) {
+                            if ($token == "False") {
+                                $mes = "tarjeta expirada";
+                            } else {
+                                $mes = str_replace("False", '', $token);
+                            }
+                            $json = array("success" => 0, "result" => 0, "error" => $mes);
+                            echo json_encode($json);
+                            die();
+                        } else {
+                            if ($myWallet < (int)$getThisBooking) {
+                                $price = (int)$getThisBooking - $myWallet;
+                                $collectAPI = collectAPI($dataMy[0]->booking_from, $price, $token, $getPaymerDetails);
+                                if(strpos($collectAPI, "False") !== false) {
+                                    $json = array("success" => 0, "result" => 0, "error" => str_replace("False", '', $collectAPI));
+                                    echo json_encode($json);
+                                    die();
+                                }
+                            }
+                            $wpdb->query("UPDATE `wtw_add_money` SET `bookingID` = $bookingID WHERE `txn_id` = '" . $collectAPI . "'");
+                            $wpdb->insert('wtw_booking_price', array(
+                                'booking_id' => $bookingID,
+                                'booking_price' => $getThisBooking,
+                                'booking_paid' => 0
+                            ));
+                            update_user_meta($dataMy[0]->user_id, "isOnline", 0);
+                            $wpdb->query("UPDATE `wtw_booking` SET `isPaid` = 1 WHERE `id` = $bookingID");
+                            $message = "Se inicia actividad";
+                        }
+                  
                 } else {
 
-                    update_user_meta($dataMy[0]->user_id, "isOnline", 0);
-                        $message = "Se inicia actividad";
+                    update_user_meta($dataMy[0]->user_id, "isOnline", 1);
+                        $message = " Se finaliza actividad";
                 }
                 if ($dataMy[0]->booking_for == "single") {
                     $section = 1;
