@@ -60,7 +60,11 @@ if($_GET['action'] == "bookings"){
  elseif ($_GET['action'] == "profile") {
 		$userID = $_GET['user_id'];
 		include("users/userDetails.php");
-	} else {
+	} elseif ($_GET['action'] == "reviews") {
+		$userID = $_GET['user_id'];
+		$bookingSource = $wpdb->get_results("SELECT * FROM `wtw_booking_reviews` WHERE `user_id`  = $userID");
+		include("trainer/bookingsReviews.php");
+	}  else {
 	//Defining to get Roles
 	$args = array(
 		'role' => 'subscriber'

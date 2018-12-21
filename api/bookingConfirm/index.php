@@ -58,13 +58,30 @@ if ($userID == "") {
                 $wpdb->query("UPDATE `wtw_booking` SET `status` = 7 , `booking_action_time` = '$curent' WHERE `id` = $bookingID");
                 $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
                 if($isPaid == 1) {
+					 $token = getUserToken($getBookingDetails[0]->booking_from);
+
+                        if (strpos($token, "False") !== false) {
+                            if ($token == "False") {
+                                $mes = "tarjeta expirada";
+                            } else {
+                                $mes = str_replace("False", '', $token);
+                            }
+                            $json = array("success" => 0, "result" => 0, "error" => $mes);
+                            echo json_encode($json);
+                            die();
+                        } else {
+							
                     $myWallet = getUserWallet($userID);
                     $getThisBooking = getBookingPrice($getBookingDetails[0]->id) + 2;
                     $getPaymerDetails = getPaymerDetails($userID);
                     if ($myWallet < $getThisBooking) {
                         $price = $getThisBooking - $myWallet;
-                        $token = getUserToken($userID);
                         $collectAPI = collectAPI($userID, $price, $token, $getPaymerDetails);
+						if(strpos($collectAPI, "False") !== false) {
+                                    $json = array("success" => 0, "result" => 0, "error" => str_replace("False", '', $collectAPI));
+                                    echo json_encode($json);
+                                    die();
+                                }
                     } else {
                         $price = $getThisBooking;
                     }
@@ -77,6 +94,7 @@ if ($userID == "") {
                     ));
                     $idBooking = $getBookingDetails[0]->id;
                     $wpdb->query("UPDATE `wtw_booking` SET `isPaid` = 1 WHERE `id` = $idBooking");
+						}
                 }
             } else {
                 $json = array("success" => 0, "result" => 0, "error" => "Estado inválido");

@@ -13,7 +13,7 @@ if ($userID == "") {
         $json = array("success" => 0, "result" => array(), "error" => "Usuario Inválido Invalid");
     } else {
         // echo "SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = 1 AND `notAttended` != 1 OR `user_id` = $userID AND `isPaid` = 1 ORDER BY `booking_date` $order";
-        $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = 1 AND `notAttended` != 1 OR `user_id` = $userID AND `isPaid` = 1 ORDER BY `booking_date` $order");
+        $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = 1 AND `notAttended` != 1 OR `user_id` = $userID AND `isPaid` = 1 AND `status`  IN (1,7) ORDER BY `booking_date` $order");
         
         if (empty($getUserDataBooking)) {
             $json = array("success" => 0, "result" => array(), "error" => "Datos no encontrados");
@@ -45,7 +45,7 @@ if ($userID == "") {
                     $section = 3;
                 }
                 $pprice = getBookingPriceTrainer($getUserDataBookingvalue->id) - 2;
-                   $getMyPrice = $pprice / 100 * 70;
+                   $getMyPrice = $pprice / 100 * 72;
                     if (strpos($getMyPrice, ".") !== false) {
                         $price = number_format((float)$getMyPrice, 3, '.', '');
                     } else {

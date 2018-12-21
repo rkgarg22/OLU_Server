@@ -22,7 +22,7 @@ if ($userID == "") {
             update_user_meta($userID, "selectedCard", $requestIdNew);
             $json = array("success" => 1, "result" => 1, "error" => "No se ha encontrado ningún error");
         } else {
-            $json = array("success" => 0, "result" => 0, "error" => "Tarjeta no valida");
+            $json = array("success" => 0, "result" => 0, "error" => "Aún no tienes ningún método de pago registrado. Gracias");
         }
     }
 }

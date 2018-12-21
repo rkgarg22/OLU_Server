@@ -1,7 +1,7 @@
 <?php
 include("../../../wp-config.php");
 $userID = $_GET['userID'];
-$login = "fcec4c9fd9ea26079d9302b2424d38ea";
+$login = "0204631fd5dfd6ff86fb92b2eef67e3f";
 $seed = date('c');
 if (function_exists('random_bytes')) {
     $nonce = bin2hex(random_bytes(16));
@@ -12,7 +12,7 @@ if (function_exists('random_bytes')) {
 }
 $nonceBase64 = base64_encode($nonce);
 $nextmonth = date('c', strtotime(' +1 month'));
-$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
+$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
 if ($userID == "") {
     $json = array("success" => 0, "result" => array(), "error" => "Todos los campos son obligatorios");
 } else {
@@ -35,7 +35,7 @@ if ($userID == "") {
                 $genToken = array("requestId" => "", "processURL" => "", "message" => "No Data");
                 $authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" }}';
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/session/" . $value);
+                curl_setopt($ch, CURLOPT_URL, "https://secure.placetopay.com/redirection/api/session/" . $value);
                 curl_setopt($ch, CURLOPT_POST, count(json_decode($authentication)));
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $authentication);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -61,7 +61,7 @@ if ($userID == "") {
             }
         }
         if(empty($cardDetails)) {
-            $json = array("success" => 0, "result" => array(), "error" => "Datos no encontrados");
+            $json = array("success" => 0, "result" => array(), "error" => "Aún no tienes ningún método de pago registrado. Gracias");
         } else {
             $json = array("success" => 1, "result" => $cardDetails, "error" => "No se ha encontrado ningún error");
         }

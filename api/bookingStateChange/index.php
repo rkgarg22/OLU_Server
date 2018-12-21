@@ -1,5 +1,6 @@
 <?php 
 include("../../wp-config.php");
+require_once "/usr/share/php/Mail.php";
 global $wpdb;
 // $data_body = json_decode(file_get_contents("php://input"), true);
 //Defining varables
@@ -40,8 +41,12 @@ if ($userID == "") {
                     (int)$getThisBooking = getBookingPrice($bookingID) + 2;
                     $getPaymerDetails = getPaymerDetails($dataMy[0]->booking_from);
                     $token = getUserToken($dataMy[0]->booking_from);
-
-                        if (strpos($token, "False") !== false) {
+                    if ($myWallet < $getThisBooking) {
+                        $paymentStatus = 1;
+                    } else {
+                        $paymentStatus = 0;
+                    }
+                        if (strpos($token, "False") !== false && $paymentStatus != 0) {
                             if ($token == "False") {
                                 $mes = "tarjeta expirada";
                             } else {
@@ -55,7 +60,39 @@ if ($userID == "") {
                                 $price = (int)$getThisBooking - $myWallet;
                                 $collectAPI = collectAPI($dataMy[0]->booking_from, $price, $token, $getPaymerDetails);
                                 if(strpos($collectAPI, "False") !== false) {
-                                    $json = array("success" => 0, "result" => 0, "error" => str_replace("False", '', $collectAPI));
+									$toData = get_userdata($dataMy[0]->booking_from );
+								$to = $toData->data->user_login;
+								 $from = "oluappinfo@gmail.com";
+								$host = "ssl://smtp.gmail.com";
+								$username = "oluappinfo@gmail.com";
+								$password = "sergiomauriciogmail18";
+								$port = "465";
+
+								$headers = array(
+									'From' => $from,
+									'To' => $to,
+									'Content-Type' => "text/html; charset=ISO-8859-1rn",
+									'Subject' => $subject
+								);
+								$smtp = Mail::factory(
+									'smtp',
+									array(
+										'host' => $host,
+										'auth' => true,
+										'port' => $port,
+										'username' => $username,
+										'password' => $password
+									)
+								);
+                                $mes = "El método de pago de el usuario ha sido RECHAZADO. Si desea continuar con el proceso de OLU, él puede actualizar la tarjeta de la siguiente manera: - desde el perfil de usuario - - seleccionar pagos - métodos de pago - añadir método de pago.Muchas gracias Equipo OLU";
+								if (strpos($token, "False") !== false) {}
+								if(strpos($collectAPI, "FalseEl método") !== false) {
+									$message2 = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'><html><head> <meta content='text/html; charset=utf-8' http-equiv='Content-Type'/> <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'> <title>Email Template - Classic</title></head><body marginheight='0' topmargin='0' marginwidth='0' style='margin: 0px; font:12px arial; color:#000;'> <table cellspacing='0' border='0' align='center' cellpadding='0' width='600' style='border:1px solid'> <tr> <td> <table cellspacing='0' border='0' align='center' cellpadding='0' width='600' style='border:0px solid #ccc; margin-top:0px;'> <tr align='center'> <td style='font-family:arial;padding-bottom:40px; '> <strong> <img src='http://oluapp.com/wp-content/uploads/2018/07/logo_olu_circulo-1.png' alt='Preto'></img> </strong> </td></tr></table> <table cellspacing='0' border='0' align='center' cellpadding='10' width='90%' style='border:0px solid'> <tr> <td> </td></tr><tr> <td> <h3> El método de pago que has ingresado está en estado de RECHAZADO. Por favor comunícate con tu entidad bancaria para verificar la información.  Si deseas continuar con el proceso de OLU, puedes ingresar otro método de pago por la aplicación así: <h3> <h3> - ir a mi perfil - seleccionar pagos - métodos de pago - añadir método de pago.  <h3> </td></tr><tr> <td>  </td></tr><tr> <td> </td></tr></table> <table cellspacing='0' border='0' align='center' cellpadding='0' width='100%' style='border:0px solid #efefef; margin-top:20px; padding:0px;'> <tr> <td align='center' style='font-family:' PT Sans ',sans-serif; font-size:13px; padding:15px 0; border-top:1px solid;'> <b>Muchas gracias<br> Equipo OLU!!</b> </strong> </td></tr></table> </td></tr></table> <style>td{width: 100%;}</style>";
+								} else {
+									$message2 = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'><html><head> <meta content='text/html; charset=utf-8' http-equiv='Content-Type'/> <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'> <title>Email Template - Classic</title></head><body marginheight='0' topmargin='0' marginwidth='0' style='margin: 0px; font:12px arial; color:#000;'> <table cellspacing='0' border='0' align='center' cellpadding='0' width='600' style='border:1px solid'> <tr> <td> <table cellspacing='0' border='0' align='center' cellpadding='0' width='600' style='border:0px solid #ccc; margin-top:0px;'> <tr align='center'> <td style='font-family:arial;padding-bottom:40px; '> <strong> <img src='http://oluapp.com/wp-content/uploads/2018/07/logo_olu_circulo-1.png' alt='Preto'></img> </strong> </td></tr></table> <table cellspacing='0' border='0' align='center' cellpadding='10' width='90%' style='border:0px solid'> <tr> <td> </td></tr><tr> <td> <h3> En este momento su SOLICITUD presenta un proceso de pago cuya transacción se encuentra PENDIENTE de recibir confirmación por parte de su entidad financiera, por favor espere unos minutos y vuelva a consultar más tarde para verificar si su pago fue confirmado de forma exitosa. Si desea mayor información sobre el estado actual de su operación puede comunicarse a nuestras líneas de atención al cliente o enviar un correo electrónico a hola@olu.co y preguntar por el estado de la transacción.<h3> </td></tr><tr> <td>  </td></tr><tr> <td> </td></tr></table> <table cellspacing='0' border='0' align='center' cellpadding='0' width='100%' style='border:0px solid #efefef; margin-top:20px; padding:0px;'> <tr> <td align='center' style='font-family:' PT Sans ',sans-serif; font-size:13px; padding:15px 0; border-top:1px solid;'> <b>Muchas gracias<br> Equipo OLU!!</b> </strong> </td></tr></table> </td></tr></table> <style>td{width: 100%;}</style>";
+								}
+								$mail = $smtp->send($to, $headers, $message2);
+                                    $json = array("success" => 0, "result" => 0, "error" => $mes);
                                     echo json_encode($json);
                                     die();
                                 }

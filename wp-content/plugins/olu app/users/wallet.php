@@ -43,17 +43,48 @@
     } else {
         echo "Amount";
     } ?></th>
+<th><?php if ($language == "es_ES") {
+        echo "Reference Number";
+    } else {
+        echo "Reference Number";
+    } ?></th>
+<th><?php if ($language == "es_ES") {
+        echo "Payment Status";
+    } else {
+        echo "Estado de pagos";
+    } ?></th>
 </tr>
 </thead>
 <tbody>
 <?php 
 $i = 1;
 foreach ($bookingPayment->result as $key => $row) {
+   if($row->paymentStatus == 0) {
+        if ($language == "es_ES") {
+            $status = "REJECTED";
+        } else {
+            $status = "RECHAZADO";
+        }
+   } elseif($row->paymentStatus == 1) {
+        if ($language == "es_ES") {
+            $status = "APPROVED";
+        } else {
+            $status = "APROBADO";
+        }
+   } elseif($row->paymentStatus == 2) {
+        if ($language == "es_ES") {
+            $status = "PENIDNG";
+        } else {
+            $status = "PENDIENTE";
+        }
+   }
     ?>
 <tr>
 <td><?php echo $row->date; ?></td>
 <td><?php echo $row->categoryName; ?></td>
 <td>$<?php echo $row->amount; ?></td>
+<td><?php echo $row->reference; ?></td>
+<td><?php echo $status; ?></td>
 
 </tr>
 <?php $i++;

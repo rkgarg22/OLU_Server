@@ -272,9 +272,8 @@ jQuery("input[name='my-checkbox']").on("change", function (event, state) {
                             } else {
                                 echo "Yes, Paid!";
                             } ?>",
-        closeOnConfirm: false
         },
-        function(){
+        function(isConfirm){
             jQuery.ajax({
 				type: "POST",
 				data: {"userID" : "<?php echo $bookingPayment->user_id; ?>" , "bookingID":"<?php echo $bookingPayment->id; ?>"},

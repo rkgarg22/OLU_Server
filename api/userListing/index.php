@@ -142,9 +142,6 @@ if ($userID == "") {
                         } else {
                             $price = $getTest[0]->company_price;
                         }
-                        if($price == "" || (int)$price <= 0) {
-                            $price = "0.000";
-                        }
                        /*  if ($use == 241) {
                             echo $price;
                         } */
@@ -215,6 +212,8 @@ if ($userID == "") {
                                 $stat = "False";
                             }
                         }
+
+                        
                         if ($stat == "True" && $price != "") {
 
                             $getCateData = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->ID");

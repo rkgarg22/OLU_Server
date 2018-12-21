@@ -1,6 +1,7 @@
 
 <?php 
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 $userImageUrl = get_user_meta($userID, "userImageUrl", true);
 $firstName = get_user_meta($userID, "first_name", true);
 $lastName = get_user_meta($userID, "last_name", true);
@@ -9,19 +10,83 @@ $longitude = get_user_meta($userID, "longitude", true);
 $gender = get_user_meta($userID, "gender", true);
 $phone = get_user_meta($userID, "phone", true);
 $dob = get_user_meta($userID, "dob", true);
-echo $isApprove = get_user_meta($userID, "isApprove", true);
+$isApprove = get_user_meta($userID, "isApprove", true);
+$isActive = get_user_meta($userID, "isActive", true);
+if($isActive == "") {
+    $isActive = 1;
+}
 ?>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/style.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/bootstrap.min.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/toastr.css' type='text/css'/>
+<link rel='stylesheet' href='<?php echo $plugin_url; ?>css/swal-forms.css' type='text/css'/>
+<link rel='stylesheet' href='<?php echo $plugin_url; ?>css/sweetalert.css' type='text/css'/>
 <link rel='stylesheet' href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' type='text/css'/>
 <script src="<?php echo $plugin_url; ?>js/bootstrap.min.js"></script>
 <script src="<?php echo $plugin_url; ?>js/jquery.validate.js"></script>
 <script src="<?php echo $plugin_url; ?>js/toastr.js"></script>
 <script src="<?php echo $plugin_url; ?>js/form.js"></script>
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="<?php echo $plugin_url; ?>js/sweetalert.js"></script>
+<script src="<?php echo $plugin_url; ?>js/swal-forms.js"></script>
 <script src="<?php echo $plugin_url; ?>js/custom.js"></script>
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
 
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
 <div class="box-container">
 <div class="bx-innr">
 	<h3><?php if ($language == "es_ES") {
@@ -108,6 +173,21 @@ echo $isApprove = get_user_meta($userID, "isApprove", true);
                                                                                 echo "View Image";
                                                                             } ?></a></td>
                 </tr>
+                    <tr>
+                    <th><?php if ($language == "es_ES") {
+                            echo "Está activo";
+                        } else {
+                            echo "Is Active";
+                        } ?></th>
+                    <td><label class="switch" title="">
+                        <input type="checkbox" name="is-active" <?php if ($isActive == 1) {
+                                                                        echo "checked"; ?>  <?php 
+                                                                                                                    } ?>>
+                        <span class="slider round"></span>
+                        </label>
+                        
+                    </td>
+                    </tr>
                 </table>
 
                 <div class="categoiryData">
@@ -183,3 +263,56 @@ echo $isApprove = get_user_meta($userID, "isApprove", true);
   
 </div>
 </div>
+
+<script>
+jQuery("input[name='is-active']").on("change", function (event, state) {
+  if(this.checked) {
+      var checked = 1;
+  } else {
+      var checked = 0;
+  }
+      swal({
+        title: "<?php if ($language == "es_ES") {
+                    echo "¿Estás seguro?";
+                } else {
+                    echo "Are you sure?";
+                } ?>",
+        text: "<?php if ($language == "es_ES") {
+                    echo "You Want to disable the user";
+                } else {
+                    echo "Quieres deshabilitar al usuario";
+                } ?>",
+        type: "success",
+        showCancelButton: true,
+        confirmButtonClass: "btn-success",
+        confirmButtonText: "<?php if ($language == "es_ES") {
+                                echo "Sí!";
+                            } else {
+                                echo "Yes!";
+                            } ?>",
+        },
+        function(isConfirm){
+            jQuery.ajax({
+				type: "POST",
+				data: {"userID" : "<?php echo $userID; ?>" , "checked":checked},
+				url:  '<?php echo site_url(); ?>/wp-content/plugins/olu app/ajax/isActive.php/?lang=en',
+				success: function (data) {
+					 swal({   title: "<?php if ($language == "es_ES") {
+                            echo "Hecho!";
+                        } else {
+                            echo "Done!";
+                        } ?>",   text: "<?php if ($language == "es_ES") {
+                                            echo "Tarea terminada";
+                                        } else {
+                                            echo "Task Done";
+                                        } ?>",  type:  "success"},function(){location.reload();
+                    });
+					// setTimeout(function () { location.reload(); }, 3000);
+				}
+			});
+       
+    });
+  
+
+});
+</script>

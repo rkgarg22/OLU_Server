@@ -102,9 +102,11 @@ ini_set('display_errors', 1);
         if (!empty($completedData->result)) {
         foreach ($completedData->result as $key => $row) {
             $getBookingPayment = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $row->bookingID");
+               
             $user_info = get_userdata($row->userID);
+            
             $terMyTerm = get_term($row->categoryID, "category");
-            if ($getBookingPayment[0]->booking_paid == 0) {
+            if ( !empty($getBookingPayment) && $getBookingPayment[0]->booking_paid == 0) {
                 $className = "danger";
                 if ($language == "es_ES") {
                     $booking_status = "No pagado";
@@ -122,9 +124,17 @@ ini_set('display_errors', 1);
             ?>
         <tr>
         <td><?php echo $i; ?></td>
-        <td><?php echo $user_info->user_login; ?></td>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            }  ?></td>
         <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
-        <td><?php echo $row->date; ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
         <td><div class="alert alert-<?php echo $className; ?>"><strong><?php echo $booking_status; ?></strong></div></td>
         <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") { echo "Ver";  } else { echo "View"; } ?></a></td>
         </tr>
@@ -183,9 +193,17 @@ ini_set('display_errors', 1);
             ?>
         <tr>
         <td><?php echo $i; ?></th>
-        <td><?php echo $user_info->user_login; ?></th>
-        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></th>
-        <td><?php echo $row->date; ?></th>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            } ?></td>
+        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
         <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") { echo "Ver"; } else { echo "View"; } ?></a></td>
         </tr>
         <?php $i++;
@@ -240,10 +258,18 @@ ini_set('display_errors', 1);
             $terMyTerm = get_term($row->categoryID, "category");
             ?>
         <tr>
-        <td><?php echo $i; ?></th>
-        <td><?php echo $user_info->user_login; ?></th>
-        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></th>
-        <td><?php echo $row->date; ?></th>
+       <td><?php echo $i; ?></td>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            } ?></td>
+        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
         <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") {  echo "Ver";  } else { echo "View";  } ?></a></td>
         </tr>
         <?php $i++;
@@ -297,10 +323,18 @@ ini_set('display_errors', 1);
             $terMyTerm = get_term($row->categoryID, "category");
             ?>
         <tr>
-        <td><?php echo $i; ?></th>
-        <td><?php echo $user_info->user_login; ?></th>
-        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></th>
-        <td><?php echo $row->date; ?></th>
+        <td><?php echo $i; ?></td>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            } ?></td>
+        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
         <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") {  echo "Ver"; } else {  echo "View";  } ?></a></td>
         </tr>
         <?php $i++;
@@ -354,10 +388,18 @@ ini_set('display_errors', 1);
             $terMyTerm = get_term($row->categoryID, "category");
             ?>
         <tr>
-        <td><?php echo $i; ?></th>
-        <td><?php echo $user_info->user_login; ?></th>
-        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></th>
-        <td><?php echo $row->date; ?></th>
+       <td><?php echo $i; ?></td>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            } ?></td>
+        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
         <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") {  echo "Ver"; } else { echo "View"; } ?></a></td>
         </tr>
         <?php $i++;

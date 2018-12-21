@@ -12,13 +12,18 @@ if ($userID == "") {
 } else {
 	//checking User
     $user = get_user_by('ID', $userID);
-    $checkUser = get_user_by('ID', $checkUserID);
+        
     if (empty($user)) {
         $json = array("success" => 0, "result" => 0, "error" => "Usuario Inválido");
     } else {
+
         $wpdb->query("UPDATE `wtw_booking` SET `status` = 1 WHERE `id` = $bookingID");
-      $getALLData = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
-      $getBookedUser = $getALLData[0]->user_id;
+        $getALLData = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
+        if ($user->roles[0] == "contributor") {
+            $getBookedUser = $getALLData[0]->booking_from;
+        } else {
+            $getBookedUser = $getALLData[0]->user_id;
+        }
         $wpdb->insert('wtw_booking_reviews', array(
             'user_id' => $getBookedUser,
             'booking_id' => $bookingID,

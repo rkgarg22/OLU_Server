@@ -4,7 +4,6 @@ include("../../wp-config.php");
 global $wpdb;
 // $data_body = json_decode(file_get_contents("php://input"), true);
 //Defining varables
-
 date_default_timezone_set("America/Bogota");
 $userID = $_GET['userID'];
 $bookinguserID = $_GET['bookinguserID'];
@@ -75,7 +74,6 @@ if ($userID == "") {
         }
     $getMyBookingAvailable = getMyBookingAvailable($bookinguserID, $bookingDate, $bookingTime, $endDateSetNoti);
     $getMyAgendaAvailable = getMyAgendaAvailable($bookinguserID, $bookingDate, $bookingTime, $endDateSetNoti);
-     
         if ($getMyAgendaAvailable == "False" || $stat == "False") {
             $stat = "False";
         }
@@ -107,7 +105,7 @@ if ($userID == "") {
                     $promo = "";
                 }
                 //Promo code
-                if ($bookingCheck != "False" && strpos($bookingCheck, "False") == false) {
+                if ($bookingCheck != "False" && strpos($bookingCheck, "False") == false || $paymentStatus == 0) {
                     $wpdb->insert('wtw_booking', array(
                         'user_id' => $_GET['bookinguserID'],
                         'category_id' => $categoryID,

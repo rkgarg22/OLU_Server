@@ -22,6 +22,7 @@ if ($userID == "") {
             $requestId = array_values($requestId);
             if(count($requestId) == 0){
                 update_user_meta($userID, "requestId", "");
+                update_user_meta($userID, "selectedCard", "");
             } else {
                 update_user_meta($userID, "requestId", json_encode($requestId));   
             }

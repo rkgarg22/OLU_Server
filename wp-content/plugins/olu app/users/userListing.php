@@ -51,6 +51,11 @@
     } else {
         echo "Users Details";
     } ?></th>
+    <th><?php if ($language == "es_ES") {
+        echo "Comentarios de reserva";
+    } else {
+        echo "Booking Reviews";
+    } ?><th>
 </tr>
 </thead>
 <tbody>
@@ -78,6 +83,11 @@ echo "Ver";
 } else {
 echo "View";
 } ?></a></p> </td>
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID; ?>&action=reviews"><?php if ($language == "es_ES") {
+                                                                                                                                                                                    echo "Ver";
+                                                                                                                                                                                } else {
+                                                                                                                                                                                    echo "View";
+                                                                                                                                                                                } ?></a></p> </td>
 </tr>
 <?php $i++;
 } ?>

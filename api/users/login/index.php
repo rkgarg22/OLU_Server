@@ -27,11 +27,18 @@ if ($userName != "" && $password != "") {
         $user = get_user_by('login', $userName);
         
         $myUserRole = $user->roles[0];
+        $isActive = get_user_meta($user->data->ID, "isActive", true);
+        if ($isActive == "") {
+            $isActive = 1;
+        }
+        if($isActive == 1) {
+
             if ($user && wp_check_password($password, $user->data->user_pass, $user->ID)) {
                /*  echo "<pre>";
                     print_r($user);
                 echo "</pre>"; */
                 $userID = $user->data->ID;
+
                 $first_name = get_user_meta($user->data->ID, "first_name", true);
                 $last_name = get_user_meta($user->data->ID, "last_name", true);
                 $latitude = get_user_meta($user->data->ID, "latitude", true);
@@ -57,7 +64,7 @@ if ($userName != "" && $password != "") {
                 if ($myUserRole == "contributor") {
                     $userRole = 1; //Trainer
                     $isApprove = get_user_meta($user->ID, "isApprove", true);
-                    if(!empty($isApprove) && $isApprove == "yes") {
+                    if (!empty($isApprove) && $isApprove == "yes") {
                         $isApprove = 1;
                     } else {
                         $isApprove = 0;
@@ -65,7 +72,7 @@ if ($userName != "" && $password != "") {
                     }
                 } elseif ($myUserRole == "subscriber") {
                     $userRole = 2; //User
-                     $isApprove = 1;
+                    $isApprove = 1;
                 } else {
                     $userRole = 0;// others
                     $isApprove = 1;
@@ -74,19 +81,22 @@ if ($userName != "" && $password != "") {
                 // echo "SELECT * FROM  `wtw_user_pricing` WHERE `user_id` = $user->ID";
                 $arrayData = $wpdb->get_results("SELECT * FROM  `wtw_user_pricing` WHERE `user_id` = $user->ID");
                 foreach ($arrayData as $key => $value) {
-                    $cateData[] = array("CategryID" => (int)$value->category_id , "singlePrice" => $value->single_price , "groupPrice2" => $value->group_price , "groupPrice3" => $value->group_price3 , "groupPrice4" => $value->group_price4 , "companyPrice" => $value->company_price);
+                    $cateData[] = array("CategryID" => (int)$value->category_id, "singlePrice" => $value->single_price, "groupPrice2" => $value->group_price, "groupPrice3" => $value->group_price3, "groupPrice4" => $value->group_price4, "companyPrice" => $value->company_price);
                 }
-                
 
-                $arrayData = array("userID" => (int)$user->ID, "firstName" => $first_name, "lastName" => $last_name, "emailAddress" => $userName, "userImageUrl" => $userImageUrl, "latitude" => $latitude, "longitude" => $longitude, "role" => $userRole , "dob" => $dob , "gender" => $gender , "phone" => $phone, "isApprove" => $isApprove , "categories" => $cateData , "description" => $description);
-                
-                $arrayData = str_replace('"null"', '""', json_encode($arrayData) );
-				$arrayData = str_replace("null",'""',$arrayData);
+
+                $arrayData = array("userID" => (int)$user->ID, "firstName" => $first_name, "lastName" => $last_name, "emailAddress" => $userName, "userImageUrl" => $userImageUrl, "latitude" => $latitude, "longitude" => $longitude, "role" => $userRole, "dob" => $dob, "gender" => $gender, "phone" => $phone, "isApprove" => $isApprove, "categories" => $cateData, "description" => $description);
+
+                $arrayData = str_replace('"null"', '""', json_encode($arrayData));
+                $arrayData = str_replace("null", '""', $arrayData);
                 $json = array("success" => 1, "result" => json_decode($arrayData), "error" => "No se ha encontrado ningún error");
 
             } else {
                 $json = array("success" => 0, "result" => null, "error" => "Por favor revisa la contraseña.");
             }
+        } else {
+            $json = array("success" => 0, "result" => null, "error" => "El usuario no está activo");
+        }
 
     } else {
         $json = array("success" => 0, "result" => null, "error" => "Usuario inválido");

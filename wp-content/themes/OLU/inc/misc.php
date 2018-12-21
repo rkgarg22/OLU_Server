@@ -26,12 +26,13 @@ function messageCheck($user1 , $user2) {
 ///User Category Module 
 add_action('show_user_profile', 'my_show_extra_profile_fields');
 add_action('edit_user_profile', 'my_show_extra_profile_fields');
+add_action('user_new_form', 'my_show_extra_profile_fields');
 
 function my_show_extra_profile_fields($user)
 {
     global $wpdb;
     $Users = new Users();
-    $getMyMOverType = $Users->getCategoryListing("en");
+    $getMyMOverType = $Users->getCategoryListing("es");
     $getTEst = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $user->ID");
    
     ?>
@@ -44,7 +45,7 @@ function my_show_extra_profile_fields($user)
         ?>
         <div class="repeated-row">
                 <div class="wrapper row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <label for="CategorID1">
                             <select name="categorySelct[]" class="form-control" id="CategorID1">
                                 <?php 
@@ -68,14 +69,22 @@ function my_show_extra_profile_fields($user)
                             <input type="text" class="form-control" name="groupPrice[]" value="" placeholder="Group Price" id="groupPrice1">
                     </label>
                 </div>
+                <div class="col-lg-2 priceSection" >
+                    <label for="groupPrice1">
+                            <input type="text" class="form-control" name="groupPrice3[]" value="" placeholder="Group Price" id="groupPrice1">
+                    </label>
+                </div>
+                <div class="col-lg-2 priceSection" >
+                    <label for="groupPrice1">
+                            <input type="text" class="form-control" name="groupPrice4[]" value="" placeholder="Group Price" id="groupPrice1">
+                    </label>
+                </div>
                 <div class="col-lg-2">
                     <label for="companyPrice1">
                             <input type="text" class="form-control" name="companyPrice[]" value="" placeholder="Company Price" id="companyPrice1">
                     </label>
                 </div>
-                <div class="col-lg-2">
-                    <button type="button" onclick="deleteMyRow(this);" class="btn btn-danger">Delete</button>
-                </div>
+               
                 </div>
             </div>
         <?php
@@ -85,7 +94,7 @@ function my_show_extra_profile_fields($user)
         ?>
         <div class="repeated-row">
                 <div class="wrapper row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <label for="CategorID1">
                             <select name="categorySelct[]" class="form-control" id="CategorID1">
                                 <?php 
@@ -108,14 +117,30 @@ function my_show_extra_profile_fields($user)
                             <input type="text" class="form-control" name="groupPrice[]" value="<?php echo $getTEstvalue->group_price; ?>" placeholder="Group Price" id="groupPrice1">
                     </label>
                 </div>
+                <div class="col-lg-2 priceSection" >
+                    <label for="groupPrice1">
+                            <input type="text" class="form-control" name="groupPrice3[]" value="<?php echo $getTEstvalue->group_price3; ?>" placeholder="Group Price" id="groupPrice1">
+                    </label>
+                </div>
+                <div class="col-lg-2 priceSection" >
+                    <label for="groupPrice1">
+                            <input type="text" class="form-control" name="groupPrice4[]" value="<?php echo $getTEstvalue->group_price4; ?>" placeholder="Group Price" id="groupPrice1">
+                    </label>
+                </div>
                 <div class="col-lg-2">
                     <label for="companyPrice1">
                             <input type="text" class="form-control" name="companyPrice[]" value="<?php echo $getTEstvalue->company_price; ?>" placeholder="Company Price" id="companyPrice1">
                     </label>
                 </div>
-                <div class="col-lg-2">
-                    <button type="button" onclick="deleteMyRow(this);" class="btn btn-danger">Delete</button>
-                </div>
+                <?php 
+                if($getTEstkey != 0) {
+                    ?>
+                    <div class="col-lg-2">
+                        <button type="button" onclick="deleteMyRow(this);" class="btn btn-danger">Delete</button>
+                    </div>
+                    <?php
+                }
+                ?>
                 </div>
             </div>
         <?php 
@@ -128,12 +153,20 @@ function my_show_extra_profile_fields($user)
 
 
         <script>
+
+        jQuery(document).ready(function(){
+            jQuery("select[name='role']").val("contributor");
+        });
           function addRow() {
             var cCount = jQuery(".repeated-row").length;
             var finCount = parseInt(cCount) + 1;
-            var dataInsert = "<div class='repeated-row'> <div class='wrapper row'> <div class='col-lg-3'> <label for='CategorID"+finCount+"'> <select name='categorySelct[]' class='form-control' id='CategorID"+finCount+"'> <?php foreach ($getMyMOverType as $key => $value) { ?> <option value='<?php echo $value['categoryID']; ?>'><?php echo $value['name']; ?></option> <?php } ?> </select> </label> </div><div class='col-lg-2'> <label for='SinglePrice"+finCount+"'> <input type='text' class='form-control' name='SinglePrice[]' value='' placeholder='Single Price' id='SinglePrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <label for='companyPrice"+finCount+"'> <input type='text' class='form-control' name='companyPrice[]' value='' placeholder='Company Price' id='companyPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <button type='button' onclick='deleteMyRow(this);' class='btn btn-danger'>Delete</button> </div></div></div>";
+            var dataInsert = "<div class='repeated-row'> <div class='wrapper row'> <div class='col-lg-2'> <label for='CategorID"+finCount+"'> <select name='categorySelct[]' class='form-control' id='CategorID"+finCount+"'> <?php foreach ($getMyMOverType as $key => $value) { ?> <option value='<?php echo $value['categoryID']; ?>'><?php echo $value['name']; ?></option> <?php } ?> </select> </label> </div><div class='col-lg-2'> <label for='SinglePrice"+finCount+"'> <input type='text' class='form-control' name='SinglePrice[]' value='' placeholder='Single Price' id='SinglePrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice3[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice4[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <label for='companyPrice"+finCount+"'> <input type='text' class='form-control' name='companyPrice[]' value='' placeholder='Company Price' id='companyPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <button type='button' onclick='deleteMyRow(this);' class='btn btn-danger'>Delete</button> </div></div></div>";
             jQuery(dataInsert).insertAfter(".repeated-row:last");
 
+        }
+
+        function deleteMyRow(event) {
+            jQuery(event).parent().parent().parent().remove();
         }
         </script>
 <?php 

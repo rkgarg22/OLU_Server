@@ -1,3 +1,5 @@
+
+
 <?php 
 /* echo "<pre>";
 print_r($users);
@@ -72,17 +74,50 @@ echo "</pre>"; */
 $i = 1;
 foreach ($users as $key => $row) {
     $isApprove = get_user_meta($row->ID, "isApprove", true);
+
+    $dataMy = $wpdb->get_results("SELECT * FROM `wtw_user_update_log` WHERE `user_id` = $row->ID ORDER BY `id` DESC LIMIT 1");
     ?>
 <tr>
 <td><?php echo $i; ?></th>
 <td><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
 <td><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
 <td><p><?php echo $row->data->user_registered; ?></p></td>
-<td style="text-align:center;"> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=user-update"><?php if ($language == "es_ES") {
-echo "Ver";
+<td style="text-align:center;"> <p>
+<?php
+if (empty($dataMy)) {
+      if ($language == "es_ES") {
+       ?>
+        <a class="btn btn-primary" href="javascript:void(0)"style="pointer-events:none">Actualizado</a>
+       <?php
+
+    } else {
+        ?>
+        <a class="btn btn-primary" href="javascript:void(0)"style="pointer-events:none">Updated</a>
+       <?php
+
+    }
+    
+} elseif ($dataMy[0]->status == 0) {
+    ?>
+    <a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=user-update"><?php if ($language == "es_ES") {
+                                                                                                                            echo "Ver";
+                                                                                                                        } else {
+                                                                                                                            echo "View";
+                                                                                                                        } ?></a>
+    <?php
 } else {
-echo "View";
-} ?></a></p> </td>
+    if ($language == "es_ES") {
+       ?>
+        <a class="btn btn-primary" href="javascript:void(0)"style="pointer-events:none">Actualizado</a>
+       <?php
+    } else {
+        ?>
+        <a class="btn btn-primary" href="javascript:void(0)"style="pointer-events:none">Updated</a>
+       <?php
+    }
+}
+?>
+</p> </td>
 <td style="text-align:center;"> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=wallet"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {

@@ -778,7 +778,7 @@ function getUserToken($userID) {
 		$reqID = (array)$selectedCard;
 		$i=0;
 		foreach ($reqID as $key => $value) {
-			$login = "fcec4c9fd9ea26079d9302b2424d38ea";
+			$login = "0204631fd5dfd6ff86fb92b2eef67e3f";
 			$seed = date('c');
 			if (function_exists('random_bytes')) {
 				$nonce = bin2hex(random_bytes(16));
@@ -789,10 +789,10 @@ function getUserToken($userID) {
 			}
 			$nonceBase64 = base64_encode($nonce);
 			$nextmonth = date('c', strtotime(' +1 month'));
-			$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
+			$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
 			$authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" }}';
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/session/" . $value);
+			curl_setopt($ch, CURLOPT_URL, "https://secure.placetopay.com/redirection/api/session/" . $value);
 			curl_setopt($ch, CURLOPT_POST, count(json_decode($authentication)));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $authentication);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -802,6 +802,10 @@ function getUserToken($userID) {
 			$token = 1;
 			if ($result->status->status == "APPROVED") {
 				return $tokenCard = $result->subscription->instrument[0]->value;
+			} elseif ($result->status->status == "REJECTED") {
+				return "FalseEl método de pago que has ingresado está en estado de RECHAZADO. Por favor comunícate con tu entidad bancaria para verificar la información. Si deseas continuar con el proceso de OLU, puedes ingresar otro método de pago. Muchas gracias";
+			}  elseif ($result->status->status == "PENDING") {
+				return "False“En este momento su SOLICITUD presenta un proceso de pago cuya transacción se encuentra PENDIENTE de recibir confirmación por parte de su entidad financiera, por favor espere unos minutos y vuelva a consultar más tarde para verificar si su pago fue confirmado de forma exitosa. Si desea mayor información sobre el estado actual de su operación puede comunicarse a nuestras líneas de atención al cliente o enviar un correo electrónico a m y preguntar por el estado de la transacción.";
 			} else {
 				return "False". $result->status->message;
 			}
@@ -819,7 +823,7 @@ function getUserWallet($userID) {
 	global $wpdb;
 	$initWaller = 0;
 	$initBooking = 0;
-	$getMyMoney = $wpdb->get_results("SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID");
+	$getMyMoney = $wpdb->get_results("SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID AND `payment_status` = 1");
 	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `booking_from` = $userID AND `status` = 1 AND `notAttended` != 1 OR `booking_from` = $userID AND `isPaid` = 1");
 	foreach ($getMyMoney as $key => $value) {
 		$initWaller = $initWaller + $value->moneyAdded;
@@ -869,7 +873,7 @@ function getUserWalletBefore($userID,$bookingID)
 	// $createc = $getBookingDet[0]->booking_action_time;
 	$createc = date("Y-m-d H:i:s", strtotime($getBookingDet[0]->booking_action_time) - 20);
 	// echo  "SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID AND `created_date` < '$createc'";
-	$getMyMoney = $wpdb->get_results("SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID AND `created_date` < '$createc'");
+	$getMyMoney = $wpdb->get_results("SELECT * FROM `wtw_add_money` WHERE `user_id` = $userID AND `created_date` < '$createc' AND `payment_status` = 1");
 	
 	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `booking_from` = $userID AND `status` = 1 AND `id` < $bookingID AND `notAttended` != 1 OR `booking_from` = $userID AND `isPaid` = 1 AND `id` < $bookingID");
 	foreach ($getMyMoney as $key => $value) {
@@ -965,9 +969,12 @@ function collectAPI($userID , $price , $token, $payer) {
 	
 	global $wpdb;
 	$token = $token;
-	$login = "fcec4c9fd9ea26079d9302b2424d38ea";
+	$login = "0204631fd5dfd6ff86fb92b2eef67e3f";
 	$seed = date('c');
 
+	$user = get_user_by('ID', $userID);
+	$first_name = get_user_meta($userID, "first_name", true);
+	$last_name = get_user_meta($userID, "last_name", true);
 	$generateMyRefNumber = generateMyRefNumber();
 	if (function_exists('random_bytes')) {
 		$nonce = bin2hex(random_bytes(16));
@@ -978,9 +985,9 @@ function collectAPI($userID , $price , $token, $payer) {
 	}
 	$nonceBase64 = base64_encode($nonce);
 	$nextmonth = date('c', strtotime(' +1 month'));
-	$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
-	$price1 = $price;
-	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ' , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "' . $price1 . '000" } }}';
+	$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
+
+	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ',"buyer":{"document":"","documentType":"CC","name":"' . $first_name . '","surname":"' . $last_name . '","email":"' . $user->data->user_login . '","address":{"street":"","city":"","country":""}} , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "' . $price . '000" } }}';
 	// echo $collectData;
 	$ch = curl_init();
 	$agents = array(
@@ -994,7 +1001,7 @@ function collectAPI($userID , $price , $token, $payer) {
 		print_r($agents);
 	echo  "</pre>"; */
 	curl_setopt($ch, CURLOPT_USERAGENT, $agents[array_rand($agents)]);
-	curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/collect/");
+	curl_setopt($ch, CURLOPT_URL, "https://secure.placetopay.com/redirection/api/collect/");
 	curl_setopt($ch, CURLOPT_POST, count(json_decode($collectData)));
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $collectData);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1003,7 +1010,7 @@ function collectAPI($userID , $price , $token, $payer) {
 	$result = json_decode($result);
 	curl_close($ch);
 $myfile = fopen(ABSPATH."newfile.txt", "w") or die("Unable to open file!");
-                $txt = $collectData.json_encode($result);
+                $txt = json_encode($result);
                 fwrite($myfile, $txt);
                 fclose($myfile);
 	if ($result->status->status == "APPROVED") {
@@ -1017,21 +1024,20 @@ $myfile = fopen(ABSPATH."newfile.txt", "w") or die("Unable to open file!");
 			'moneyValue' => $price,
 			'moneyAdded' => $price,
 			'created_date' => date("Y-m-d H:i:s"),
+			'payment_status' => 1,
 			'ref_num' => $generateMyRefNumber
 		));
 		return $result->requestId;
-	} else {
-		foreach ($result->payment as $key => $value) {
-			if ($value->reference == $generateMyRefNumber) {
-				$message = $value->status->message;
+	}  elseif ($result->status->status == "REJECTED") {
+		
+				return "FalseEl método de pago que has ingresado está en estado de RECHAZADO. Por favor comunícate con tu entidad bancaria para verificar la información. Si deseas continuar con el proceso de OLU, puedes ingresar otro método de pago. Muchas gracias";
+			}  elseif ($result->status->status == "PENDING") {
+				return "False“En este momento su SOLICITUD presenta un proceso de pago cuya transacción se encuentra PENDIENTE de recibir confirmación por parte de su entidad financiera, por favor espere unos minutos y vuelva a consultar más tarde para verificar si su pago fue confirmado de forma exitosa. Si desea mayor información sobre el estado actual de su operación puede comunicarse a nuestras líneas de atención al cliente o enviar un correo electrónico a hola@olu.com y preguntar por el estado de la transacción.";
 			}
-		}
-		return "False".$message;
-	}
 }
 
 function getPaymerDetails($userID) {
-	$getUserToekn = get_user_meta($userID, "requestId", true);
+	$getUserToekn = get_user_meta($userID, "selectedCard", true);
 	$requestId = json_decode($getUserToekn);
 	$getType = gettype($requestId);
 	if ($getType == "integer") {
@@ -1041,7 +1047,7 @@ function getPaymerDetails($userID) {
 		if ($value == "") {
 			return "False";
 		} else {
-			$login = "fcec4c9fd9ea26079d9302b2424d38ea";
+			$login = "0204631fd5dfd6ff86fb92b2eef67e3f";
 			$seed = date('c');
 			if (function_exists('random_bytes')) {
 				$nonce = bin2hex(random_bytes(16));
@@ -1052,18 +1058,28 @@ function getPaymerDetails($userID) {
 			}
 			$nonceBase64 = base64_encode($nonce);
 			$nextmonth = date('c', strtotime(' +1 month'));
-			$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
+			$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
 			$authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" }}';
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/session/" . $value);
+			curl_setopt($ch, CURLOPT_URL, "https://secure.placetopay.com/redirection/api/session/" . $value);
 			curl_setopt($ch, CURLOPT_POST, count(json_decode($authentication)));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $authentication);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
 			$result = curl_exec($ch);
+			curl_close($ch);
+			/* echo "<pre>";
+				print_r(json_decode($result));
+			echo "</pre>"; */
 			$result = json_decode($result);
 			$token = 1;
 			if ($result->status->status == "APPROVED") {
+				return $result->request->payer;
+				break;
+			} elseif ($result->status->status == "PENDING") {
+				return $result->request->payer;
+				break;
+			} elseif ($result->status->status == "REJECTED") {
 				return $result->request->payer;
 				break;
 			} else {
@@ -1084,7 +1100,7 @@ function getPaymerDetailsTest($userID) {
 		if ($value == "") {
 			return "False";
 		} else {
-			$login = "fcec4c9fd9ea26079d9302b2424d38ea";
+			$login = "0204631fd5dfd6ff86fb92b2eef67e3f";
 			$seed = date('c');
 			if (function_exists('random_bytes')) {
 				$nonce = bin2hex(random_bytes(16));
@@ -1095,10 +1111,10 @@ function getPaymerDetailsTest($userID) {
 			}
 			$nonceBase64 = base64_encode($nonce);
 			$nextmonth = date('c', strtotime(' +1 month'));
-			$tranKey = base64_encode(sha1($nonce . $seed . "92EukRSJ82Vr0TUt", true));
+			$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
 			$authentication = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" }}';
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, "https://test.placetopay.com/redirection/api/session/" . $value);
+			curl_setopt($ch, CURLOPT_URL, "https://secure.placetopay.com/redirection/api/session/" . $value);
 			curl_setopt($ch, CURLOPT_POST, count(json_decode($authentication)));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $authentication);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1340,7 +1356,7 @@ function getMyAgendaAvailable($userID , $agenda_datee , $agenda_start_time , $ag
 			}
 				
 		} elseif ($value->agenda_type == 0) {
-			if (date("Y-m-d", strtotime($agenda_date)) == $value->agenda_date) {
+			if (date("Y-m-d", strtotime($agendaBookingend_date)) == $value->agenda_date) {
 				if ((strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
