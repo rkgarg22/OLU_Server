@@ -1,0 +1,39 @@
+.box-container{background: #efefef;padding: 20px;margin: 10px 0;width: 98%;float:left;}
+.box-container h1{font-size:21px;margin-top:0px;}
+form#select_retailer_cat select{width:30%;margin-right:2%;float:left;line-height:35px;height:35px;}
+#retailer_locations label,#select_retailer_cat label,#retailer_category label{font-size:13px;margin-bottom:10px;display:block;}
+.box-container .btn{padding:6px 24px;}
+#select_retailer_cat input[type="text"]{width:15%;float:left;margin-right:2%;}
+hr{border-top:1px solid #ccc !important;}
+.edit{float: left;margin-right: 2%;}
+.table{margin-top:2%;}
+.table thead tr th{font-size:13px;}
+.flt_rght{float:right;}
+.modal-content{background:#efefef !important;}
+.modal-header{background:#fff;}
+.modal h4.modal-title{text-align:center;font-size:21px;}
+.modal-body table{border:2px solid #ddd;background:#fff;}
+.modal .modal-body table tr th{font-size:13px;}
+#create_user h2{font-size:18px;}
+.modal-dialog{margin:159px auto !important;}
+#create_user label{font-size:13px;}
+textarea.form-control{resize:none;}
+#create_user select{height:35px;line-height:35px;}
+.minwdth{width:50% !important;border:2px solid #ddd;background:#fff;}
+.bx-innr {width: 50%;border: 2px solid #ddd;padding: 10px;background: #fff;margin-bottom:10px;}
+#retailer_category input[type="text"],#retailer_locations input[type="text"],#select_retailer_cat input[type="text"]{width:30%;float:left;margin-right:2%;}
+.bx-innr-full {width: 100%;border: 2px solid #ddd;padding: 10px;background: #fff;margin-bottom:10px;}
+.bx-innr-usr{width: 100%;border: 2px solid #ddd;padding: 10px;background: #fff;float: left;margin-bottom:10px;}
+.bx-innr-usr .form-group{float: left;width: 28%;margin-right: 5%;min-height:80px;}
+.box-container .upload-feat-image, .box-container .logo-del-image{padding:6px 11px !important;}
+.btn-min-width .btn{padding:6px 11px !important;}
+.bx-innr-usr button[type="submit"]{padding:6px 24px !important;}
+.pagination b {padding: 5px;background: #fff;font-size: 11px;border: 1px solid #ddd;}
+label.error{display:none !important;}
+.bx-innr input.error,.bx-innr select.error,.bx-innr textarea.error{border:1px solid red;}
+
+.bx-innr ul li input[type="radio"]{margin:0px !important;}
+.wp-admin select{padding-left:12px;}
+#assign_perk ul li {display: inline;margin-right: 5%;}
+#mng-perk ul li{display: inline;margin-right: 5%;}
+#assign_perk p {background: #efefef;padding: 5px;border-radius: 5px;border: 1px solid #ddd;}

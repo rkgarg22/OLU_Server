@@ -9,10 +9,10 @@
 <script src="<?php echo $plugin_url; ?>js/custom.js"></script>
 
 <div class="box-container">
-<div class="bx-innr">
+<!-- <div class="bx-innr">
 	<h1><?php if($language == "es_ES") { echo "Sección de usuarios"; } else { echo "Users Section"; } ?></h1>
     <a href="<?php echo site_url(); ?>/wp-admin/user-new.php" class="btn-info btn"><?php if ($language == "es_ES") {  echo "Agregar usuario"; } else { echo "Add User";  } ?></a>
-</div>
+</div> -->
 
 <div class="bx-innr-usr">
 	<h1><?php if ($language == "es_ES") { echo "Listado de usuarios"; } else { echo "Users Listing"; } ?></h1>

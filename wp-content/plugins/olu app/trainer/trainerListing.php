@@ -8,6 +8,7 @@ echo "</pre>"; */
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/style.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/bootstrap.min.css' type='text/css'/>
 <link rel='stylesheet' href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' type='text/css'/>
+<link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' type='text/css'/>
 <script src="<?php echo $plugin_url; ?>js/bootstrap.min.js"></script>
 <script src="<?php echo $plugin_url; ?>js/jquery.validate.js"></script>
 <script src="<?php echo $plugin_url; ?>js/form.js"></script>
@@ -18,6 +19,8 @@ echo "</pre>"; */
 <div class="bx-innr">
 	<h3><?php if($language == "es_ES") { echo "Sección de usuarios"; } else { echo "Users Section"; } ?></h3>
     <a href="<?php echo site_url(); ?>/wp-admin/user-new.php" class="btn-info btn"><?php if ($language == "es_ES") {  echo "Agregar usuario"; } else { echo "Add User";  } ?></a>
+    <a href="<?php echo site_url(); ?>/api/userListing/export.php?lang=es" class="btn-info btn"><i class="fa fa-download" aria-hidden="true"></i><?php if ($language == "es_ES") {  echo " Exportar usuarios activos"; } else { echo " Export Active Users";  } ?></a>
+
 </div>
 
 <div class="bx-innr-usr">
@@ -33,7 +36,7 @@ echo "</pre>"; */
         echo "Name";
     } ?></th>
 <th><?php if ($language == "es_ES") {
-        echo "Listado de usuarios";
+        echo "Email";
     } else {
         echo "Email";
     } ?></th>

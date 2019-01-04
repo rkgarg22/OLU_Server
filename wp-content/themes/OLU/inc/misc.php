@@ -151,11 +151,44 @@ function my_show_extra_profile_fields($user)
         <button class="button button-primary button-large"  type="button" class="btn-add" onclick="addRow();">Add Rows</button>
 
 
-
+        <style>
+        .user-rich-editing-wrap {
+            display:none;
+        }
+         .user-admin-color-wrap {
+            display:none;
+        }
+         .user-comment-shortcuts-wrap {
+            display:none;
+        }
+         .user-admin-bar-front-wrap {
+            display:none;
+        }
+         .user-language-wrap {
+            display:none;
+        }
+         .user-user-login-wrap {
+            display:none;
+        }
+         .user-display-name-wrap {
+            display:none;
+        }
+         .user-url-wrap {
+            display:none;
+        }
+         .user-description-wrap {
+            display:none;
+        }
+         .user-profile-picture {
+            display:none;
+        }
+        </style>
         <script>
 
         jQuery(document).ready(function(){
             jQuery("select[name='role']").val("contributor");
+            jQuery("h2").remove();
+            jQuery("h3").remove();
         });
           function addRow() {
             var cCount = jQuery(".repeated-row").length;
@@ -181,19 +214,25 @@ function save_custom_user_profile_fields($user_id)
         return false;
 
     # save my custom field
-    $wpdb->query("DELETE * FROM `wtw_user_pricing` WHERE `user_id` = $user_id");
+    $wpdb->query("DELETE  FROM `wtw_user_pricing` WHERE `user_id` = $user_id");
     foreach ($_POST['categorySelct'] as $key => $value) {
         $singlePrice = $_POST['SinglePrice'][$key];
         $groupPrice = $_POST['groupPrice'][$key];
+        $groupPrice3 = $_POST['groupPrice3'][$key];
+        $groupPrice4 = $_POST['groupPrice4'][$key];
         $companyPrice = $_POST['companyPrice'][$key];
         $wpdb->insert('wtw_user_pricing', array(
             'user_id' => $user_id,
             'single_price' => $singlePrice,
             'group_price' => $groupPrice,
+            'group_price3' => $groupPrice3,
+            'group_price4' => $groupPrice4,
             'company_price' => $companyPrice,
             'category_id' => $value
         ));
     }
+
+    update_user_meta($user_id, "isApprove", 'yes');
 }
 add_action('user_register', 'save_custom_user_profile_fields');
 add_action('profile_update', 'save_custom_user_profile_fields');

@@ -4,6 +4,7 @@
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/swal-forms.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/sweetalert.css' type='text/css'/>
 <link rel='stylesheet' href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' type='text/css'/>
+<link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' type='text/css'/>
 <script src="<?php echo $plugin_url; ?>js/bootstrap.min.js"></script>
 <script src="<?php echo $plugin_url; ?>js/jquery.validate.js"></script>
 <script src="<?php echo $plugin_url; ?>js/toastr.js"></script>
@@ -82,6 +83,8 @@ input:checked + .slider:before {
     } else {
         echo "Booking Reviews";
     } ?></h3>
+    <a href="<?php echo site_url(); ?>/api/trainingComplete/export.php/?userID=<?php echo $userID; ?>" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Revisiones de exportación</a>
+
 </div>
 
 <div class="bx-innr-usr">

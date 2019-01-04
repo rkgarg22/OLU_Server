@@ -11,10 +11,12 @@ $gender = get_user_meta($userID, "gender", true);
 $phone = get_user_meta($userID, "phone", true);
 $dob = get_user_meta($userID, "dob", true);
 $isApprove = get_user_meta($userID, "isApprove", true);
+$description = get_user_meta($userID, "description", true);
 $isActive = get_user_meta($userID, "isActive", true);
 if($isActive == "") {
     $isActive = 1;
 }
+$users = get_userdata($userID);
 ?>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/style.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/bootstrap.min.css' type='text/css'/>
@@ -22,6 +24,7 @@ if($isActive == "") {
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/swal-forms.css' type='text/css'/>
 <link rel='stylesheet' href='<?php echo $plugin_url; ?>css/sweetalert.css' type='text/css'/>
 <link rel='stylesheet' href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' type='text/css'/>
+<link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' type='text/css'/>
 <script src="<?php echo $plugin_url; ?>js/bootstrap.min.js"></script>
 <script src="<?php echo $plugin_url; ?>js/jquery.validate.js"></script>
 <script src="<?php echo $plugin_url; ?>js/toastr.js"></script>
@@ -122,6 +125,14 @@ input:checked + .slider:before {
                 </tr>
                 <tr>
                 <th><?php if ($language == "es_ES") {
+                        echo "Email";
+                    } else {
+                        echo "Email";
+                    } ?></th>
+                <td><?php echo $users->data->user_login; ?></td>
+                </tr>
+                <tr>
+                <th><?php if ($language == "es_ES") {
                         echo "Latitude";
                     } else {
                         echo "Latitude";
@@ -151,6 +162,14 @@ input:checked + .slider:before {
                         echo "Phone";
                     } ?></th>
                 <td><?php echo $phone; ?></td>
+                </tr>
+                <tr>
+                <th><?php if ($language == "es_ES") {
+                        echo "Descripción";
+                    } else {
+                        echo "Description";
+                    } ?></th>
+                <td><?php echo $description; ?></td>
                 </tr>
                 
                 <tr>
@@ -186,6 +205,45 @@ input:checked + .slider:before {
                         <span class="slider round"></span>
                         </label>
                         
+                    </td>
+                    </tr>
+                    <tr>
+                    <th><?php if ($language == "es_ES") {
+                            echo "Historial de pagos de exportación (Pagado)";
+                        } else {
+                            echo "Export Payment History (Paid)";
+                        } ?></th>
+                    <td>
+                        <a href="<?php echo site_url(); ?>/api/payment/paymentHistory/export.php/?userID=<?php echo $userID; ?>&order=DESC&isPaid=1&lang=es" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i></a>
+                    </td>
+                    </tr>
+                    <tr>
+                    <th><?php if ($language == "es_ES") {
+                            echo "Historial de pagos de exportación (Sin pagar)";
+                        } else {
+                            echo "Export Payment History (Un Paid)";
+                        } ?></th>
+                    <td>
+                        <a href="<?php echo site_url(); ?>/api/payment/paymentHistory/export.php/?userID=<?php echo $userID; ?>&order=DESC&isPaid=0&lang=es" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i></a>
+                    </td>
+                    </tr>
+                    <tr>
+                    <th><?php if ($language == "es_ES") {
+                            echo "Entrenadores realizaron lecciones de historia.";
+                        } else {
+                            echo "Trainers performed lessons history ";
+                        } ?></th>
+                    <td>
+                        <a href="<?php echo site_url(); ?>/api/bookingHistory/export.php/?userID=<?php echo $userID; ?>&status=1&lang=es" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i></a>
+                    </td>
+                    </tr>
+                    <tr>
+                    <th><?php if ($language == "es_ES") {
+                            echo "Editar";
+                        } else {
+                            echo "Edit";
+                        } ?></th>
+                    <td><a href="<?php echo site_url(); ?>/wp-admin/user-edit.php?user_id=<?php echo $userID; ?>" class="btn btn-info"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
                     </td>
                     </tr>
                 </table>
