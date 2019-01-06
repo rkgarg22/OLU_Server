@@ -36,6 +36,21 @@ function my_show_extra_profile_fields($user)
     $getTEst = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $user->ID");
    
     ?>
+    <style>
+    .multi-language-field-image a {
+        display: none;
+    }
+    </style>
+    <script>
+        jQuery(document).ready(function(){
+            jQuery("input[name='submit']").click(function(){
+                var valueName = jQuery("input[name='fields[field_5c309f6aef415][es]']").val();
+                if(valueName == "" || jQuery.isNumeric(valueName) == false) {
+                    jQuery("input[name='fields[field_5c309f6aef415][es]']").removeAttr("name");
+                }
+            });
+        });                 
+    </script>
 
 	<h3>Price Module</h3>
 
@@ -212,7 +227,7 @@ function save_custom_user_profile_fields($user_id)
     # again do this only if you can
     if (!current_user_can('manage_options'))
         return false;
-
+    
     # save my custom field
     $wpdb->query("DELETE  FROM `wtw_user_pricing` WHERE `user_id` = $user_id");
     foreach ($_POST['categorySelct'] as $key => $value) {
@@ -233,6 +248,11 @@ function save_custom_user_profile_fields($user_id)
     }
 
     update_user_meta($user_id, "isApprove", 'yes');
+    if($_POST['fields']['field_5c309f6aef415']['es'] != "") {
+        $feat_image_url = wp_get_attachment_url($_POST['fields']['field_5c309f6aef415']['es']);
+        update_user_meta($user_id, "userImageUrl", $feat_image_url);
+    }
+    update_user_meta($user_id, "description", $_POST['fields']['field_5c1ddd8ed55f0']);
 }
 add_action('user_register', 'save_custom_user_profile_fields');
 add_action('profile_update', 'save_custom_user_profile_fields');
