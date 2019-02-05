@@ -41,6 +41,7 @@ $host = "ssl://smtp.gmail.com";
 $username = "oluappinfo@gmail.com";
 $password = "sergiomauriciogmail18";
 $port = "465";
+$subject = "Pre- Inscripción Olu Team";
 $from = "oluappinfo@gmail.com";
 $to = "oluappinfo@gmail.com";
 $headers = array(

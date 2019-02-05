@@ -10,8 +10,8 @@ if (is_admin())
   function form_create_olu_fitness_section() 
 	 {  
 	add_menu_page("Olu Fitness", "Olu Fitness",1,"olu_fitness","");
-	add_submenu_page("olu_fitness", "Olu Fitness", "Olu Fitness",8, "olu_fitness", "olu_fitness");
-	add_submenu_page("olu_fitness", "Olu Fitness Trainer", "Olu Fitness Trainer",8, "trainer", "trainer");
+	add_submenu_page("olu_fitness", "Usuarios", "Usuarios",8, "olu_fitness", "olu_fitness");
+	add_submenu_page("olu_fitness", "OLU Team", "OLU Team",8, "trainer", "trainer");
 	add_submenu_page("olu_fitness", "Olu Promo Code", "Olu Promo Code",8, "promo_code", "promo_code");
 	 }  
    add_action('admin_menu', 'form_create_olu_fitness_section'); 

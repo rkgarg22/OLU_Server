@@ -90,6 +90,9 @@ mark {
 	background-color: #eee;
 	color: #222;
 }
+.submitdelete {
+	display: none !important;
+}
 
 small {
 	font-size: 80%;

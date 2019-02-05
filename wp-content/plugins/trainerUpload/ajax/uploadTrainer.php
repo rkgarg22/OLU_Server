@@ -12,11 +12,13 @@ $excel = new Spreadsheet_Excel_Reader();
 $x = 1;
 foreach ($wpdb->get_results("SELECT * FROM `wtw_upload_file` ORDER BY `url_id` DESC Limit 1") as $key => $row) {
 
-    $check = explode("/flujo/", $row->url);
+    $check = explode(".146/", $row->url);
 }
 
 $x = 1;
-$excel->read(ABSPATH . $check[1]);
+echo $check[1];
+echo $excel->read(ABSPATH . $check[1]);
+
 
 $x = 1;
 while ($x <= $excel->sheets[0]['numRows']) {
@@ -37,7 +39,7 @@ while ($x <= $excel->sheets[0]['numRows']) {
             update_user_meta($user_id , "gender" , $excel->sheets[0]['cells'][$x][5]);
             update_user_meta($user_id , "phone" , $excel->sheets[0]['cells'][$x][7]);
             update_user_meta($user_id , "description" , $excel->sheets[0]['cells'][$x][8]);
-            update_user_meta($user_id, "isApprove", 'yes');
+            update_user_meta($user_id, "isApprove", 'no');
         } else {
             $user = get_user_by('email', $excel->sheets[0]['cells'][$x][6]);
             $user_id = $user->ID;
@@ -47,7 +49,7 @@ while ($x <= $excel->sheets[0]['numRows']) {
             update_user_meta($user_id, "gender", $excel->sheets[0]['cells'][$x][5]);
             update_user_meta($user_id, "phone", $excel->sheets[0]['cells'][$x][7]);
             // update_user_meta($user_id, "description", $excel->sheets[0]['cells'][$x][8]);
-            update_user_meta($user_id, "isApprove", 'yes');
+            update_user_meta($user_id, "isApprove", 'no');
         }
     }
     $x++;

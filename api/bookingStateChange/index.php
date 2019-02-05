@@ -38,7 +38,8 @@ if ($userID == "") {
                 if ($state == 4) {
                     // echo $dataMy[0]->booking_from;
                     $myWallet = getUserWallet($dataMy[0]->booking_from);
-                    (int)$getThisBooking = getBookingPrice($bookingID) + 2;
+                    $getThisBooking = getBookingPrice($bookingID) + 2;
+                    $getThisBooking1 = getBookingPrice1($bookingID) + 2;
                     $getPaymerDetails = getPaymerDetails($dataMy[0]->booking_from);
                     $token = getUserToken($dataMy[0]->booking_from);
                     if ($myWallet < $getThisBooking) {
@@ -56,8 +57,8 @@ if ($userID == "") {
                             echo json_encode($json);
                             die();
                         } else {
-                            if ($myWallet < (int)$getThisBooking) {
-                                $price = (int)$getThisBooking - $myWallet;
+                            if ($myWallet < $getThisBooking) {
+                                $price = $getThisBooking - $myWallet;
                                 $collectAPI = collectAPI($dataMy[0]->booking_from, $price, $token, $getPaymerDetails);
                                 if(strpos($collectAPI, "False") !== false) {
 									$toData = get_userdata($dataMy[0]->booking_from );
@@ -100,7 +101,7 @@ if ($userID == "") {
                             $wpdb->query("UPDATE `wtw_add_money` SET `bookingID` = $bookingID WHERE `txn_id` = '" . $collectAPI . "'");
                             $wpdb->insert('wtw_booking_price', array(
                                 'booking_id' => $bookingID,
-                                'booking_price' => $getThisBooking,
+                                'booking_price' => $getThisBooking1,
                                 'booking_paid' => 0
                             ));
                             update_user_meta($dataMy[0]->user_id, "isOnline", 0);

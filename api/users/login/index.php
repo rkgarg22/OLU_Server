@@ -59,13 +59,13 @@ if ($userName != "" && $password != "") {
 
                 update_user_meta($user->data->ID, 'firebaseTokenId', $firebaseTokenId);
                 update_user_meta($user->data->ID, 'deviceType', $deviceType);
-                update_user_meta($user->data->ID, 'isOnline', 1);
                 //Seting Up Roles
                 if ($myUserRole == "contributor") {
                     $userRole = 1; //Trainer
                     $isApprove = get_user_meta($user->ID, "isApprove", true);
                     if (!empty($isApprove) && $isApprove == "yes") {
                         $isApprove = 1;
+                        update_user_meta($user->data->ID, 'isOnline', 1);
                     } else {
                         $isApprove = 0;
                         // $isApprove = 1;
@@ -73,9 +73,13 @@ if ($userName != "" && $password != "") {
                 } elseif ($myUserRole == "subscriber") {
                     $userRole = 2; //User
                     $isApprove = 1;
+
+                    update_user_meta($user->data->ID, 'isOnline', 1);
                 } else {
                     $userRole = 0;// others
                     $isApprove = 1;
+                    update_user_meta($user->data->ID, 'isOnline', 1);
+
                 }
                 $cateData = array();
                 // echo "SELECT * FROM  `wtw_user_pricing` WHERE `user_id` = $user->ID";

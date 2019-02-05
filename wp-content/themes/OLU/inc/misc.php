@@ -151,7 +151,7 @@ function my_show_extra_profile_fields($user)
                 if($getTEstkey != 0) {
                     ?>
                     <div class="col-lg-2">
-                        <button type="button" onclick="deleteMyRow(this);" class="btn btn-danger">Delete</button>
+                        <button type="button" onclick="deleteMyRow(this);" class="btn btn-danger">Borrar</button>
                     </div>
                     <?php
                 }
@@ -163,10 +163,18 @@ function my_show_extra_profile_fields($user)
 }
     ?>
         </div>
-        <button class="button button-primary button-large"  type="button" class="btn-add" onclick="addRow();">Add Rows</button>
+        <button class="button button-primary button-large"  type="button" class="btn-add" onclick="addRow();">Añadir</button>
 
-
+        <script>
+        jQuery(document).ready(function(){
+            jQuery("input[type='submit']").val("Actualizar");
+        })
+        </script>
         <style>
+        .btn-danger {
+            margin-bottom: 10px !important;
+                line-height: 1.1 !important;
+        }
         .user-rich-editing-wrap {
             display:none;
         }
@@ -208,7 +216,7 @@ function my_show_extra_profile_fields($user)
           function addRow() {
             var cCount = jQuery(".repeated-row").length;
             var finCount = parseInt(cCount) + 1;
-            var dataInsert = "<div class='repeated-row'> <div class='wrapper row'> <div class='col-lg-2'> <label for='CategorID"+finCount+"'> <select name='categorySelct[]' class='form-control' id='CategorID"+finCount+"'> <?php foreach ($getMyMOverType as $key => $value) { ?> <option value='<?php echo $value['categoryID']; ?>'><?php echo $value['name']; ?></option> <?php } ?> </select> </label> </div><div class='col-lg-2'> <label for='SinglePrice"+finCount+"'> <input type='text' class='form-control' name='SinglePrice[]' value='' placeholder='Single Price' id='SinglePrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice3[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice4[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <label for='companyPrice"+finCount+"'> <input type='text' class='form-control' name='companyPrice[]' value='' placeholder='Company Price' id='companyPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <button type='button' onclick='deleteMyRow(this);' class='btn btn-danger'>Delete</button> </div></div></div>";
+            var dataInsert = "<div class='repeated-row'> <div class='wrapper row'> <div class='col-lg-2'> <label for='CategorID"+finCount+"'> <select name='categorySelct[]' class='form-control' id='CategorID"+finCount+"'> <?php foreach ($getMyMOverType as $key => $value) { ?> <option value='<?php echo $value['categoryID']; ?>'><?php echo $value['name']; ?></option> <?php } ?> </select> </label> </div><div class='col-lg-2'> <label for='SinglePrice"+finCount+"'> <input type='text' class='form-control' name='SinglePrice[]' value='' placeholder='Single Price' id='SinglePrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice3[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2 priceSection' > <label for='groupPrice"+finCount+"'> <input type='text' class='form-control' name='groupPrice4[]' value='' placeholder='Group Price' id='groupPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <label for='companyPrice"+finCount+"'> <input type='text' class='form-control' name='companyPrice[]' value='' placeholder='Company Price' id='companyPrice"+finCount+"'> </label> </div><div class='col-lg-2'> <button type='button' onclick='deleteMyRow(this);' class='btn btn-danger'>Borrar</button> </div></div></div>";
             jQuery(dataInsert).insertAfter(".repeated-row:last");
 
         }

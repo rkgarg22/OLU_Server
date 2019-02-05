@@ -117,7 +117,7 @@ if ($emailAddress != "") {
         $username = "oluappinfo@gmail.com";
         $password = "sergiomauriciogmail18";
         $port = "465";
-
+        $subject = "Bienvenido a OLU.";
         $to = $emailAddress;
         $headers = array(
             'From' => $from,

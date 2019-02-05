@@ -58,7 +58,7 @@ if ($userID == "") {
                 $section = 3;
             }
             $myWalletThen =  getUserWalletBefore($value->booking_from , $value->id);
-          $getBookingPrice = getBookingPriceTrainer($value->id);
+            $getBookingPrice = getBookingPriceTrainer($value->id);
             if(!empty($refID)) {
                 if($myWalletThen < 0) {
                     $myWalletThen = 0;

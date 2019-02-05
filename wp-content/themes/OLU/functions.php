@@ -599,6 +599,11 @@ require get_parent_theme_file_path('/inc/UserModule.php');
  */
 require get_parent_theme_file_path('/inc/misc.php');
 
+function admin_style1()
+{
+	wp_enqueue_style('admin-styles1', get_template_directory_uri() . '/admin.css');
+}
+add_action('admin_enqueue_scripts', 'admin_style1');
 
 /////Firebase Section////////
 function sendMessage($target, $title, $message)
@@ -861,7 +866,7 @@ function getUserWallet($userID) {
 	 if($finalAmount < 0) {
 		 return 0;
 	 } else {
-		 return $finalAmount;
+		 return (int)$finalAmount;
 	 }
 }
 function getUserWalletBefore($userID,$bookingID)
@@ -945,6 +950,32 @@ function getBookingPrice($bookingID) {
 	}
 }
 
+function getBookingPrice1($bookingID) {
+	global $wpdb;
+	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
+	foreach ($useMoney as $key => $value) {
+		
+		$getBookingDetails = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->user_id AND `category_id` = $value->category_id");
+
+		if ($value->booking_for == "single") {
+			$metaKey = "single_price";
+		} elseif ($value->booking_for == "business") {
+			$metaKey = "group_price";
+		} elseif ($value->booking_for == "business3") {
+			$metaKey = "group_price3";
+		} elseif ($value->booking_for == "business4") {
+			$metaKey = "group_price4";
+		} else {
+			$metaKey = "company_price";
+		}
+		if(isset($valueCode)) {
+			return ($valueCode / 100) * $getBookingDetails[0]->$metaKey;
+		} else {
+			return $getBookingDetails[0]->$metaKey;
+		}
+	}
+}
+
 function getBookingPriceTrainer($bookingID) {
 	global $wpdb;
 	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
@@ -955,6 +986,29 @@ function getBookingPriceTrainer($bookingID) {
 		}
 		
 		$getBookingDetails = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $bookingID");
+		if($getBookingDetails[0]->booking_price > 0) {
+			$prNew = $getBookingDetails[0]->booking_price - 2;
+		} else {
+			$prNew = 0;
+		}
+
+
+		if (isset($valueCode)) {
+			return ($valueCode / 100) * $prNew;
+		} else {
+			return $prNew;
+		}
+	}
+}
+
+function getBookingPriceTrainer1($bookingID)
+{
+	global $wpdb;
+	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
+	foreach ($useMoney as $key => $value) {
+		
+
+		$getBookingDetails = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $bookingID");
 
 
 		if (isset($valueCode)) {
@@ -964,7 +1018,26 @@ function getBookingPriceTrainer($bookingID) {
 		}
 	}
 }
+function getBookingPriceUser($bookingID)
+{
+	global $wpdb;
+	$useMoney = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `id` = $bookingID");
+	foreach ($useMoney as $key => $value) {
+		/* if ($value->promocode != "") {
+			$getPromoCode = $wpdb->get_results("SELECT * FROM `wtw_promocode` WHERE `name` = '$value->promocode'");
+			$valueCode = 100 - $getPromoCode[0]->discount;
+		} */
 
+		$getBookingDetails = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $bookingID");
+
+
+		if (isset($valueCode)) {
+			return ($valueCode / 100) * $getBookingDetails[0]->booking_price;
+		} else {
+			return $getBookingDetails[0]->booking_price;
+		}
+	}
+}
 function collectAPI($userID , $price , $token, $payer) {
 	
 	global $wpdb;
@@ -986,8 +1059,13 @@ function collectAPI($userID , $price , $token, $payer) {
 	$nonceBase64 = base64_encode($nonce);
 	$nextmonth = date('c', strtotime(' +1 month'));
 	$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
-
-	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ',"buyer":{"document":"","documentType":"CC","name":"' . $first_name . '","surname":"' . $last_name . '","email":"' . $user->data->user_login . '","address":{"street":"","city":"","country":""}} , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "' . $price . '000" } }}';
+	if (strpos($price, ".") !== false) {
+		$price = number_format((float)$price, 3, '.', '');
+		$price = str_replace("." , "" ,$price);
+	} else {
+		$price = $price . "000";
+	}
+	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ',"buyer":{"document":"","documentType":"CC","name":"' . $first_name . '","surname":"' . $last_name . '","email":"' . $user->data->user_login . '","address":{"street":"","city":"","country":""}} , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "' . $price . '" } }}';
 	// echo $collectData;
 	$ch = curl_init();
 	$agents = array(
@@ -1010,7 +1088,7 @@ function collectAPI($userID , $price , $token, $payer) {
 	$result = json_decode($result);
 	curl_close($ch);
 $myfile = fopen(ABSPATH."newfile.txt", "w") or die("Unable to open file!");
-                $txt = json_encode($result);
+                $txt = $collectData."<br>".json_encode($result);
                 fwrite($myfile, $txt);
                 fclose($myfile);
 	if ($result->status->status == "APPROVED") {
@@ -1238,27 +1316,27 @@ function getMyAgendaAvailable($userID , $agenda_datee , $agenda_start_time , $ag
 			} else {
 				$datearray = array($agendaDate, $agendaEndDate);
 			}
-			$currentDate = date("w", strtotime($agenda_date));
+			$currentDate = date("w", strtotime($agenda_datee));
 			if (in_array($currentDate, $datearray)) {
 
 				if (strtotime($value->agenda_start_time) > strtotime($value->agenda_end_time)) {
-					$endDate = date("Y-m-d", strtotime("+1 day", strtotime($agenda_date)));
-					$startDate = date("Y-m-d", strtotime($agenda_date));
+					$endDate = date("Y-m-d", strtotime("+1 day", strtotime($agenda_datee)));
+					$startDate = date("Y-m-d", strtotime($agenda_datee));
 				} else {
-					$endDate = date("Y-m-d", strtotime($agenda_date));
-					$startDate = date("Y-m-d", strtotime($agenda_date));
+					$endDate = date("Y-m-d", strtotime($agenda_datee));
+					$startDate = date("Y-m-d", strtotime($agenda_datee));
 				}
-				if ((strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($endDate . " " . $value->agenda_end_time))) {
+				if ((strtotime($agendaBookingend_date . " " . $agenda_start_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_start_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 				if ((strtotime($agendaBookingend_date . " " . $agenda_end_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_end_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 
-				if ((strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
-				if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
 				
@@ -1275,26 +1353,26 @@ function getMyAgendaAvailable($userID , $agenda_datee , $agenda_start_time , $ag
 			} else {
 				$Montharray = array($agendaMonth, $agendaEndMonth);
 			}
-			$currentMonth = date("d", strtotime($agenda_date));
+			$currentMonth = date("d", strtotime($agenda_datee));
 			if (in_array($currentMonth, $Montharray)) {
 				if (strtotime($value->agenda_start_time) > strtotime($value->agenda_end_time)) {
-					$endDate = date("Y-m-d", strtotime("+1 day", strtotime($agenda_date)));
-					$startDate = date("Y-m-d", strtotime($agenda_date));
+					$endDate = date("Y-m-d", strtotime("+1 day", strtotime($agenda_datee)));
+					$startDate = date("Y-m-d", strtotime($agenda_datee));
 				} else {
-					$endDate = date("Y-m-d", strtotime($agenda_date));
-					$startDate = date("Y-m-d", strtotime($agenda_date));
+					$endDate = date("Y-m-d", strtotime($agenda_datee));
+					$startDate = date("Y-m-d", strtotime($agenda_datee));
 				}
-				if ((strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($endDate . " " . $value->agenda_end_time))) {
+				if ((strtotime($agendaBookingend_date . " " . $agenda_start_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_start_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 				if ((strtotime($agendaBookingend_date . " " . $agenda_end_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_end_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 
-				if ((strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
-				if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
 				
@@ -1308,52 +1386,56 @@ function getMyAgendaAvailable($userID , $agenda_datee , $agenda_start_time , $ag
 			} else {
 				$Montharray = array($agendaMonth, $agendaEndMonth);
 			}
-			$currentMonth = date("m-d", strtotime($agenda_date));
+			$currentMonth = date("m-d", strtotime($agenda_datee));
 			if (in_array($currentMonth, $Montharray)) {
 				if (strtotime($value->agenda_start_time) > strtotime($value->agenda_end_time)) {
-					$endDate = date("Y-m-d", strtotime("+1 day", strtotime($agenda_date)));
-					$startDate = date("Y-m-d", strtotime($agenda_date));
+					$endDate = date("Y-m-d", strtotime("+1 day", strtotime($agenda_datee)));
+					$startDate = date("Y-m-d", strtotime($agenda_datee));
 				} else {
-					$endDate = date("Y-m-d", strtotime($agenda_date));
-					$startDate = date("Y-m-d", strtotime($agenda_date));
+					$endDate = date("Y-m-d", strtotime($agenda_datee));
+					$startDate = date("Y-m-d", strtotime($agenda_datee));
 				}
-				if ((strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($endDate . " " . $value->agenda_end_time))) {
+				if ((strtotime($agendaBookingend_date . " " . $agenda_start_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_start_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 				if ((strtotime($agendaBookingend_date . " " . $agenda_end_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_end_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 
-				if ((strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
-				if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
 				
 			}
 		} elseif ($value->agenda_type == 1) {
 			if (strtotime($value->agenda_start_time) > strtotime($value->agenda_end_time)) {
-				$endDate = date("Y-m-d", strtotime("+1 day" , strtotime($agenda_date)));
-				$startDate = date("Y-m-d", strtotime($agenda_date));
+				$endDate = date("Y-m-d", strtotime("+1 day" , strtotime($agenda_datee)));
+				$startDate = date("Y-m-d", strtotime($agenda_datee));
 			} else {
-				$endDate = date("Y-m-d", strtotime($agenda_date));
-				$startDate = date("Y-m-d", strtotime($agenda_date));
+				$endDate = date("Y-m-d", strtotime($agenda_datee));
+				$startDate = date("Y-m-d", strtotime($agenda_datee));
 			}
 			
-			if ((strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($endDate . " " . $value->agenda_end_time))) {
+			if ((strtotime($agendaBookingend_date . " " . $agenda_start_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_start_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 				$status = "False";
 			}
 			if ((strtotime($agendaBookingend_date . " " . $agenda_end_time) >= strtotime($startDate . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_end_time) <= strtotime($endDate . " " . $value->agenda_end_time))) {
 				$status = "False";
 			}
 
-			if ((strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+			if ((strtotime($startDate . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($startDate . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 				$status = "False";
 			}
-			if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+			if ((strtotime($endDate . " " . $value->agenda_end_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($endDate . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 				$status = "False";
 			}
+			/* $myfile = fopen(ABSPATH . "newfile.txt", "w") or die("Unable to open file!");
+			$txt = $endDate. $startDate;
+			fwrite($myfile, $txt);
+			fclose($myfile); */
 				
 		} elseif ($value->agenda_type == 0) {
 			if (date("Y-m-d", strtotime($agendaBookingend_date)) == $value->agenda_date) {
@@ -1653,5 +1735,6 @@ function generateMyRefNumber() {
 		}
 	}
 }
+
 
 

@@ -85,12 +85,17 @@ if ($userID == "") {
                 $userLatitude = get_user_meta($value->ID, "latitude", true);
                 $useLongitude = get_user_meta($value->ID, "longitude", true);
                 $isOnline = get_user_meta($value->ID, "isOnline", true);
+                $isActive = get_user_meta($value->ID, "isActive", true);
+                $isApprove = get_user_meta($value->ID, "isApprove", true);
+                if($isActive == "") {
+                    $isActive = 1;
+                }
                 if($_GET['latitude'] == "" && $_GET['longitude'] == "") {
                     $distance = 1;
                 } else {
                     $distance = distance(floatval($latitude), floatval($longitude), floatval($userLatitude), floatval($useLongitude), "K");
                 }
-                if ($distance <= 100 && $isOnline == 1 && $statusTrue == "true") {
+                if ($distance <= 100 && $isOnline == 1 && $isActive == 1 && $isApprove == "yes" && $statusTrue == "true") {
                    /*  $user = 'user_' . $value->ID;
                     $variable = get_field('categories', $user); */
                     if(empty($category)) {
@@ -131,17 +136,32 @@ if ($userID == "") {
                         if($use == 241) {
 
                         }
-                        if ($selectGroup == 1) {
-                            $price = $getTest[0]->single_price;
-                        } elseif ($selectGroup == 2) {
-                            $price = $getTest[0]->group_price;
-                        } elseif ($selectGroup == 4) {
-                            $price = $getTest[0]->group_price3;
-                        } elseif ($selectGroup == 5) {
-                            $price = $getTest[0]->group_price4;
+                        if ($selectGroup == "") {
+                            if ($getTest[0]->single_price != "") {
+                                $price = $getTest[0]->single_price;
+                            } elseif ($getTest[0]->group_price != "") {
+                                $price = $getTest[0]->group_price;
+                            } elseif ($getTest[0]->group_price3 != "") {
+                                $price = $getTest[0]->group_price3;
+                            } elseif ($getTest[0]->group_price4 != "") {
+                                $price = $getTest[0]->group_price4;
+                            } else {
+                                $price = $getTest[0]->company_price;
+                            }
                         } else {
-                            $price = $getTest[0]->company_price;
+                            if ($selectGroup == 1) {
+                                $price = $getTest[0]->single_price;
+                            } elseif ($selectGroup == 2) {
+                                $price = $getTest[0]->group_price;
+                            } elseif ($selectGroup == 4) {
+                                $price = $getTest[0]->group_price3;
+                            } elseif ($selectGroup == 5) {
+                                $price = $getTest[0]->group_price4;
+                            } else {
+                                $price = $getTest[0]->company_price;
+                            }
                         }
+                        
                        /*  if ($use == 241) {
                             echo $price;
                         } */

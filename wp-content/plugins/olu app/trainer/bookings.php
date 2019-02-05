@@ -52,7 +52,7 @@ ini_set('display_errors', 1);
                                                 echo "Pendiente";
                                             } else {
                                                 echo "Pending";
-                                            } ?>Pending</a></li>
+                                            } ?></a></li>
   </ul>
 
   <div class="tab-content">
@@ -62,9 +62,9 @@ ini_set('display_errors', 1);
         <tr>
         <th>S.no</th>
         <th><?php if ($language == "es_ES") {
-                echo "Usuario reservado";
+                echo "Nombre de usuario";
             } else {
-                echo "Booked User";
+                echo "Nombre de usuario";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Categoría";
@@ -77,19 +77,19 @@ ini_set('display_errors', 1);
                 echo "Booking Created";
             } ?></th> -->
         <th><?php if ($language == "es_ES") {
-                echo "Fecha para registrarse";
+                echo "Fecha de actividad";
             } else {
-                echo "Booking Date";
+                echo "Fecha de actividad";
             } ?></th>
              <th><?php if ($language == "es_ES") {
-                    echo "Estado de pago";
+                    echo "Estado de Pago";
                 } else {
-                    echo "Payment Status";
+                    echo "Estado de Pago";
                 } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Detalles";
             } else {
-                echo "Details";
+                echo "Detalles";
             } ?></th>
         
         </tr>
@@ -151,9 +151,9 @@ ini_set('display_errors', 1);
         <tr>
         <th>S.no</th>
         <th><?php if ($language == "es_ES") {
-                echo "Usuario reservado";
+                echo "Nombre de usuario";
             } else {
-                echo "Booked User";
+                echo "Nombre de usuario";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Categoría";
@@ -161,9 +161,9 @@ ini_set('display_errors', 1);
                 echo "Category";
             } ?></th>
         <!-- <th><?php if ($language == "es_ES") {
-                    echo "Reserva creada";
+                    echo "Estado de Pago";
                 } else {
-                    echo "Booking Created";
+                    echo "Estado de Pago";
                 } ?></th> -->
         <th><?php if ($language == "es_ES") {
                 echo "Fecha para registrarse";
@@ -174,7 +174,7 @@ ini_set('display_errors', 1);
         <th><?php if ($language == "es_ES") {
                 echo "Detalles";
             } else {
-                echo "Details";
+                echo "Detalles";
             } ?></th>
         
         </tr>
@@ -219,9 +219,9 @@ ini_set('display_errors', 1);
         <tr>
         <th>S.no</th>
         <th><?php if ($language == "es_ES") {
-                echo "Usuario reservado";
+                echo "Nombre de usuario";
             } else {
-                echo "Booked User";
+                echo "Nombre de usuario";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Categoría";
@@ -234,14 +234,14 @@ ini_set('display_errors', 1);
                     echo "Booking Created";
                 } ?></th> -->
         <th><?php if ($language == "es_ES") {
-                echo "Fecha para registrarse";
+                echo "Fecha de actividad";
             } else {
-                echo "Booking Date";
+                echo "Fecha de actividad";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Detalles";
             } else {
-                echo "Details";
+                echo "Detalles";
             } ?></th>
         
         </tr>
@@ -250,8 +250,11 @@ ini_set('display_errors', 1);
         <?php 
         $i = 1;
         $j = 5;
+        $j1 = 7;
         $completedData = file_get_contents($bookingSource . $j);
+        $completedData1 = file_get_contents($bookingSource . $j1);
         $completedData = json_decode($completedData);
+        $completedData1 = json_decode($completedData1);
         if (!empty($completedData->result)) {
         foreach ($completedData->result as $key => $row) {
             $user_info = get_userdata($row->userID);
@@ -274,6 +277,33 @@ ini_set('display_errors', 1);
         </tr>
         <?php $i++;
     }
+}
+if (!empty($completedData1->result)) {
+    foreach ($completedData1->result as $key => $row) {
+        $user_info = get_userdata($row->userID);
+        $terMyTerm = get_term($row->categoryID, "category");
+        ?>
+        <tr>
+       <td><?php echo $i; ?></td>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            } ?></td>
+        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
+        <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") {
+                                                                                                                                                                                                                    echo "Ver";
+                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                    echo "View";
+                                                                                                                                                                                                                } ?></a></td>
+        </tr>
+        <?php $i++;
+    }
 } ?>
         </tbody>
         </table>
@@ -284,9 +314,9 @@ ini_set('display_errors', 1);
         <tr>
         <th>S.no</th>
         <th><?php if ($language == "es_ES") {
-                echo "Usuario reservado";
+                echo "Nombre de usuario";
             } else {
-                echo "Booked User";
+                echo "Nombre de usuario";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Categoría";
@@ -299,14 +329,14 @@ ini_set('display_errors', 1);
                     echo "Booking Created";
                 } ?></th> -->
         <th><?php if ($language == "es_ES") {
-                echo "Fecha para registrarse";
+                echo "Fecha de actividad";
             } else {
-                echo "Booking Date";
+                echo "Fecha de actividad";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Detalles";
             } else {
-                echo "Details";
+                echo "Detalles";
             } ?></th>
         
         </tr>
@@ -348,9 +378,9 @@ ini_set('display_errors', 1);
         <tr>
         <th>S.no</th>
         <th><?php if ($language == "es_ES") {
-                echo "Usuario reservado";
+                echo "Nombre de usuario";
             } else {
-                echo "Booked User";
+                echo "Nombre de usuario";
             } ?></th>
         <th><?php if ($language == "es_ES") {
                 echo "Categoría";
@@ -363,15 +393,15 @@ ini_set('display_errors', 1);
                     echo "Booking Created";
                 } ?></th> -->
         <th><?php if ($language == "es_ES") {
-                echo "Fecha para registrarse";
+                echo "Fecha de actividad";
             } else {
-                echo "Booking Date";
+                echo "Fecha de actividad";
             } ?></th>
        
         <th><?php if ($language == "es_ES") {
                 echo "Detalles";
             } else {
-                echo "Details";
+                echo "Detalles";
             } ?></th>
         
         </tr>

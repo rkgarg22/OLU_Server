@@ -44,7 +44,8 @@ if ($userID == "") {
                 } else {
                     $section = 3;
                 }
-                $pprice = getBookingPriceTrainer($getUserDataBookingvalue->id) - 2;
+                $pprice = getBookingPriceTrainer1($getUserDataBookingvalue->id) - 2;
+                
                    $getMyPrice = $pprice / 100 * 72;
                     if (strpos($getMyPrice, ".") !== false) {
                         $price = number_format((float)$getMyPrice, 3, '.', '');

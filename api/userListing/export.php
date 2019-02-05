@@ -12,7 +12,8 @@ $args = array(
 );
 $users = get_users($args);
 $arrayPrep = array();
-$arrayPrep[] =  array("firstName" => "Nombre de pila" , "lastName" => "Apellido" , "email" => "Dirección de correo electrónico" , "joiningDate" => "Dia de ingreso" , "description" => "Descripción" , "gender" => "Género" , "phone" => "Teléfono" , "dob" => "Fecha de nacimiento" , "age" => "Años");
+// DESCRIPCION / GENERO / TELEFONO / FECHA DE NACIMIENTO / ESTADO / ACTIVIDADES / PRECIO
+$arrayPrep[] =  array("firstName" => "NOMBRE" , "lastName" => "APELLIDO" , "email" => "EMAIL" , "joiningDate" => "FECHA DE INGRESO" , "description" => "DESCRIPCION" , "gender" => "GENERO" , "phone" => "TELEFONO" , "dob" => "FECHA DE NACIMIENTO" , "state" => "ESTADO"  , 'activities' => 'ACTIVIDADES');
 foreach ($users as $key => $value) {
     $firstName = get_user_meta($value->ID , "first_name" , true);
     $lastName = get_user_meta($value->ID , "last_name" , true);
@@ -22,13 +23,46 @@ foreach ($users as $key => $value) {
     $dob = get_user_meta($value->ID , "dob" , true);
     $age = get_user_meta($value->ID , "age" , true);
     $isActive = get_user_meta($value->ID , "isActive" , true);
+    $isApprove = get_user_meta($value->ID, "isApprove", true);
+    $string = "";
+    $getUserPricing  = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->ID");
+    foreach ($getUserPricing as $getUserPricingkey => $getUserPricingvalue) {
+
+        $terMyTerm = get_term($getUserPricingvalue->category_id, "category");
+        $string .= $terMyTerm->name."\n";
+        if($getUserPricingvalue->single_price != ""){
+            $string .= "Precio Individual : $". $getUserPricingvalue->single_price."\n";
+        }
+        if($getUserPricingvalue->group_price != ""){
+            $string .= "Precio grupo 2 : $". $getUserPricingvalue->group_price ."\n";
+        }
+        if($getUserPricingvalue->group_price3 != ""){
+            $string .= "Precio grupo 3 : $". $getUserPricingvalue->group_price3 ."\n";
+        }
+        if($getUserPricingvalue->group_price4 != ""){
+            $string .= "Precio grupo 4 : $". $getUserPricingvalue->group_price4 ."\n";
+        }
+        if($getUserPricingvalue->company_price != ""){
+            $string .= "Precio Empresarial : $". $getUserPricingvalue->company_price ."\n\n";
+        }
+    }
     if($isActive == "") {
         $isActive = 1;
     }
-    if($isActive == 1) {
-        $arrayPrep[] = array("firstName" => $firstName, "lastName" => $lastName, "email" => $value->data->user_login, "joiningDate" => $value->data->user_registered, "description" => $description, "gender" => $gender, "phone" => $phone, "dob" => $dob, "age" => $age);
+    if ($isApprove == "yes") {
+        $isActive = get_user_meta($value->ID, "isActive", true);
+        
+        if ($isActive == 0) {
+            $myStatus = "INACTIVO";
 
-    }
+    } else {
+        $myStatus = 'APROBADO';
+}
+} else {
+$myStatus = 'PENDIENTE';
+
+}
+        $arrayPrep[] = array("firstName" => $firstName, "lastName" => $lastName, "email" => $value->data->user_login, "joiningDate" => $value->data->user_registered, "description" => $description, "gender" => $gender, "phone" => $phone, "dob" => $dob, "state" => $myStatus , "activities" => $string);
 }
 foreach ($arrayPrep as $key => $value) {
 

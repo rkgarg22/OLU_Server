@@ -224,8 +224,11 @@ ini_set('display_errors', 1);
         <?php 
         $i = 1;
         $j = 5;
+        $j1 = 7;
         $completedData = file_get_contents($bookingSource . $j);
+        $completedData1 = file_get_contents($bookingSource . $j1);
         $completedData = json_decode($completedData);
+        $completedData1 = json_decode($completedData1);
         if (!empty($completedData->result)) {
         foreach ($completedData->result as $key => $row) {
             $user_info = get_userdata($row->userID);
@@ -245,6 +248,33 @@ ini_set('display_errors', 1);
         <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
         <td><?php echo $row->bookingDate; ?></td>
         <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") {  echo "Ver";  } else { echo "View";  } ?></a></td>
+        </tr>
+        <?php $i++;
+    }
+}
+if (!empty($completedData1->result)) {
+    foreach ($completedData1->result as $key => $row) {
+        $user_info = get_userdata($row->userID);
+        $terMyTerm = get_term($row->categoryID, "category");
+        ?>
+        <tr>
+        <td><?php echo $i; ?></th>
+        <td><?php if (empty($user_info)) {
+                if ($language == "es_ES") {
+                    echo "Usuario eliminado";
+                } else {
+                    echo "User Deleted";
+                }
+            } else {
+                echo $user_info->user_login;
+            } ?></td>
+        <td><?php echo apply_filters('translate_text', $terMyTerm->name, $lang = $lang, $flags = 0); ?></td>
+        <td><?php echo $row->bookingDate; ?></td>
+        <td><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->userID; ?>&booking_id=<?php echo $row->bookingID; ?>&action=bookingDetails"><?php if ($language == "es_ES") {
+                                                                                                                                                                                                                    echo "Ver";
+                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                    echo "View";
+                                                                                                                                                                                                                } ?></a></td>
         </tr>
         <?php $i++;
     }

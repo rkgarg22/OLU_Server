@@ -17,15 +17,15 @@ echo "</pre>"; */
 
 <div class="box-container">
 <div class="bx-innr">
-	<h3><?php if($language == "es_ES") { echo "Sección de usuarios"; } else { echo "Users Section"; } ?></h3>
-    <a href="<?php echo site_url(); ?>/wp-admin/user-new.php" class="btn-info btn"><?php if ($language == "es_ES") {  echo "Agregar usuario"; } else { echo "Add User";  } ?></a>
-    <a href="<?php echo site_url(); ?>/api/userListing/export.php?lang=es" class="btn-info btn"><i class="fa fa-download" aria-hidden="true"></i><?php if ($language == "es_ES") {  echo " Exportar usuarios activos"; } else { echo " Export Active Users";  } ?></a>
+	<h3><?php if($language == "es_ES") { echo "OLU TEAM"; } else { echo "OLU TEAM"; } ?></h3>
+    <a href="<?php echo site_url(); ?>/wp-admin/user-new.php" class="btn-info btn"><?php if ($language == "es_ES") {  echo "AÑADIR NUEVO OLU"; } else { echo "AÑADIR NUEVO OLU";  } ?></a>
+    <a href="<?php echo site_url(); ?>/api/userListing/export.php?lang=es" class="btn-info btn"><i class="fa fa-download" aria-hidden="true"></i><?php if ($language == "es_ES") {  echo " EXPORTAR REPORTE OLU TEAM"; } else { echo " EXPORTAR REPORTE OLU TEAM";  } ?></a>
 
 </div>
 
 <div class="bx-innr-usr">
-	<h3><?php if ($language == "es_ES") { echo "Listado de usuarios"; } else { echo "Users Listing"; } ?></h3>
-	<div class="section-table-details">
+	<h3><?php if ($language == "es_ES") { echo "Listado de Entrenadores Olu."; } else { echo "Listado de Entrenadores Olu."; } ?></h3>
+	<div class="section-table-details table-responsive">
 <table class="table table-striped view-details" id="myTables">
 <thead>
 <tr>
@@ -40,20 +40,20 @@ echo "</pre>"; */
     } else {
         echo "Email";
     } ?></th>
-<th><?php if ($language == "es_ES") {
+<!-- <th><?php if ($language == "es_ES") {
         echo "Creado por el usuario";
     } else {
         echo "User Created";
-    } ?></th>
+    } ?></th> -->
 <th><?php if ($language == "es_ES") {
         echo "Solicitud de actualización de perfil";
     } else {
         echo "Profile Update request";
     } ?></th>
 <th><?php if ($language == "es_ES") {
-        echo "Billeteras de Entrenador";
+        echo "Pagos";
     } else {
-        echo "Trainer Wallets";
+        echo "Pagos";
     } ?></th>
 <th><?php if ($language == "es_ES") {
         echo "Detalles del entrenador";
@@ -61,14 +61,14 @@ echo "</pre>"; */
         echo "Trainer Details";
     } ?></th>
 <th><?php if ($language == "es_ES") {
-        echo "Comentarios de reserva";
+        echo "Reviews";
     } else {
-        echo "Booking Reviews";
+        echo "Reviews";
     } ?></th>
     <th><?php if ($language == "es_ES") {
-        echo "Aprobar / No aprobar";
+        echo "Estado";
     } else {
-        echo "Approve/Unapprove";
+        echo "Estado";
     } ?></th>
 </tr>
 </thead>
@@ -84,7 +84,7 @@ foreach ($users as $key => $row) {
 <td><?php echo $i; ?></th>
 <td><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
 <td><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
-<td><p><?php echo $row->data->user_registered; ?></p></td>
+<!-- <td><p><?php //echo $row->data->user_registered; ?></p></td> -->
 <td style="text-align:center;"> <p>
 <?php
 if (empty($dataMy)) {
@@ -102,7 +102,7 @@ if (empty($dataMy)) {
     
 } elseif ($dataMy[0]->status == 0) {
     ?>
-    <a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=user-update"><?php if ($language == "es_ES") {
+    <a class="btn btn-danger" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=user-update"><?php if ($language == "es_ES") {
                                                                                                                             echo "Ver";
                                                                                                                         } else {
                                                                                                                             echo "View";
@@ -139,22 +139,38 @@ echo "View";
 <td style="text-align:center;">
 <?php 
 if($isApprove == "yes") {
-    ?>
+    $isActive = get_user_meta($row->ID, "isActive", true);
+    if($isActive == "") {
+        $isActive = 1;
+    }
+    if($isActive == 0) {
+        ?>
+            <div class="alert alert-danger">
+            <?php if ($language == "es_ES") {
+                echo "INACTIVO";
+            } else {
+                echo "INACTIVO";
+            } ?>
+            </div>
+        <?php
+    } else {
+        ?>
         <div class="alert alert-success">
         <?php if ($language == "es_ES") {
-            echo "Aprobar";
+            echo "APROBADO";
         } else {
             echo "Approve";
         } ?>
         </div>
     <?php
+    }
 } else {
     ?>
     <div class="alert alert-info">
         <?php if ($language == "es_ES") {
-            echo "No aprobar";
+            echo "PENDIENTE";
         } else {
-            echo "Unapprove";
+            echo "PENDIENTE";
         } ?>
         </div>
     <?php
@@ -172,6 +188,12 @@ if($isApprove == "yes") {
 </div>
 <script>
 jQuery(document).ready( function () {
-    jQuery('#myTables').DataTable();
+    jQuery('#myTables').DataTable({
+        language: { search: "Buscar" },
+    });
 } );
 </script>
+<style>
+.table thead,
+.table th {text-align: center;}
+</style>

@@ -93,9 +93,9 @@ input:checked + .slider:before {
 <div class="box-container">
 <div class="bx-innr">
 	<h3><?php if ($language == "es_ES") {
-        echo "de usuario";
+        echo "ENTRENADOR";
     } else {
-        echo "User Update";
+        echo "ENTRENADOR";
     } ?></h3>
 </div>
 
@@ -109,7 +109,7 @@ input:checked + .slider:before {
                 <table class="table table-striped">
                 <tr>
                 <th><?php if ($language == "es_ES") {
-                        echo "nombre de pila";
+                        echo "NOMBRE";
                     } else {
                         echo "First Name";
                     } ?></th>
@@ -164,7 +164,7 @@ input:checked + .slider:before {
                 <td><?php echo $phone; ?></td>
                 </tr>
                 <tr>
-                <th><?php if ($language == "es_ES") {
+                <th style="width:50%;"><?php if ($language == "es_ES") {
                         echo "Descripción";
                     } else {
                         echo "Description";
@@ -194,9 +194,9 @@ input:checked + .slider:before {
                 </tr>
                     <tr>
                     <th><?php if ($language == "es_ES") {
-                            echo "Está activo";
+                            echo "ESTADO";
                         } else {
-                            echo "Is Active";
+                            echo "ESTADO";
                         } ?></th>
                     <td><label class="switch" title="">
                         <input type="checkbox" name="is-active" <?php if ($isActive == 1) {
@@ -209,14 +209,15 @@ input:checked + .slider:before {
                     </tr>
                     <tr>
                     <th><?php if ($language == "es_ES") {
-                            echo "Historial de pagos de exportación (Pagado)";
+                            echo "Historial de pagos";
                         } else {
-                            echo "Export Payment History (Paid)";
+                            echo "Historial de pagos";
                         } ?></th>
                     <td>
-                        <a href="<?php echo site_url(); ?>/api/payment/paymentHistory/export.php/?userID=<?php echo $userID; ?>&order=DESC&isPaid=1&lang=es" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i></a>
+                        
+                        <a href="<?php echo site_url(); ?>/api/bookingHistory/export.php/?userID=<?php echo $userID; ?>&status=1&lang=es" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i></a>
                     </td>
-                    </tr>
+                   <!--  </tr>
                     <tr>
                     <th><?php if ($language == "es_ES") {
                             echo "Historial de pagos de exportación (Sin pagar)";
@@ -236,7 +237,7 @@ input:checked + .slider:before {
                     <td>
                         <a href="<?php echo site_url(); ?>/api/bookingHistory/export.php/?userID=<?php echo $userID; ?>&status=1&lang=es" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i></a>
                     </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                     <th><?php if ($language == "es_ES") {
                             echo "Editar";

@@ -1,7 +1,5 @@
 <?php 
-echo "<pre>";
-    print_r($bookingPayment1);
-echo "</pre>";
+
 $userData = get_userdata($bookingPayment->booking_from);
 $trainerData = get_userdata($bookingPayment->user_id);
 $terMyTerm = get_term($bookingPayment->category_id, "category");
@@ -22,6 +20,12 @@ if($bookingPayment->status == 1) {
         $stat = "Cancelado por Entrenador";
     } else {
         $stat = "Canceled By Trainer";
+    }
+} elseif ($bookingPayment->status == 7) {
+    if ($language == "es_ES") {
+        $stat = "Cancelado por usuário";
+    } else {
+        $stat = "Canceled By User";
     }
 } elseif ($bookingPayment->status == 2) {
     if ($language == "es_ES") {
