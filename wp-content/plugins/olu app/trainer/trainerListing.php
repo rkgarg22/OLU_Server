@@ -76,14 +76,38 @@ echo "</pre>"; */
 <?php 
 $i = 1;
 foreach ($users as $key => $row) {
+
+    $bookingSource = "http://3.16.104.146/api/bookingHistory/?userID=" . $row->ID . "&status=";
+    $i = 1;
+    $completedData = file_get_contents($bookingSource . $i);
+    $completedData = json_decode($completedData);
+    if (!empty($completedData->result)) {
+        foreach ($completedData->result as $key1 => $row1) {
+            $getBookingPayment = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $row1->bookingID");
+            if (!empty($getBookingPayment) && $getBookingPayment[0]->booking_paid == 0) {
+                $className = "danger";
+
+                $booking_status = "Pago pendiente";
+                break;
+            } else {
+                $className = "primary";
+
+                $booking_status = "Pagado";
+            }
+        }
+    } else {
+        $className = "primary";
+
+        $booking_status = "Pagado";
+    }
     $isApprove = get_user_meta($row->ID, "isApprove", true);
 
     $dataMy = $wpdb->get_results("SELECT * FROM `wtw_user_update_log` WHERE `user_id` = $row->ID ORDER BY `id` DESC LIMIT 1");
     ?>
 <tr>
-<td><?php echo $i; ?></th>
-<td><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
-<td><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
+<td style="text-align:center;"><?php echo $i; ?></th>
+<td style="text-align:center;"><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
+<td style="text-align:center;"><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
 <!-- <td><p><?php //echo $row->data->user_registered; ?></p></td> -->
 <td style="text-align:center;"> <p>
 <?php
@@ -121,11 +145,7 @@ if (empty($dataMy)) {
 }
 ?>
 </p> </td>
-<td style="text-align:center;"> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=wallet"><?php if ($language == "es_ES") {
-echo "Ver";
-} else {
-echo "View";
-} ?></a></p> </td>
+<td style="text-align:center;"> <p><a class="btn btn-<?php echo $className; ?>" href="/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID ?>&action=wallet"><?php echo $booking_status; ?></a></p> </td>
 <td style="text-align:center;"> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=trainer&user_id=<?php echo $row->ID; ?>&action=profile"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {

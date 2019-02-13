@@ -17,13 +17,13 @@ if($bookingPayment->status == 1) {
     }
 } elseif ($bookingPayment->status == 5) {
     if ($language == "es_ES") {
-        $stat = "Cancelado por Entrenador";
+        $stat = "Cancelado Olu Team";
     } else {
         $stat = "Canceled By Trainer";
     }
 } elseif ($bookingPayment->status == 7) {
     if ($language == "es_ES") {
-        $stat = "Cancelado por usuário";
+        $stat = "Cancelado usuário";
     } else {
         $stat = "Canceled By User";
     }

@@ -75,26 +75,24 @@ foreach ($users as $key => $row) {
     $completedData = json_decode(file_get_contents($bookingSourceq . $j));
     if (!empty($completedData->result)) {
         $cname = "btn-danger";
+        $text = "Agendado";
     } else {
         $cname = "btn-primary";
+        $text = "Ver";
     }
     ?>
 <tr>
-<td><?php echo $i; ?></td>
-<td><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
-<td><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
-<td><p><?php echo $row->data->user_registered; ?></p></td>
-<td> <p><a class="btn <?php echo $cname; ?>" href="/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID ?>&action=bookings"><?php if ($language == "es_ES") {
+<td style="text-align:center;"><?php echo $i; ?></td>
+<td style="text-align:center;"><p><?php echo get_user_meta($row->ID , "first_name" , true)." ". get_user_meta($row->ID, "last_name", true) ?></p></td>
+<td style="text-align:center;"><p><a href="mailto:<?php echo $row->data->user_email; ?>"><?php echo $row->data->user_email; ?></a></p></td>
+<td style="text-align:center;"><p><?php echo date("Y-m-d" , strtotime($row->data->user_registered)); ?></p></td>
+<td style="text-align:center;"> <p><a class="btn <?php echo $cname; ?>" href="/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID ?>&action=bookings"><?php echo $text; ?></a></p> </td>
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID ?>&action=wallet"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {
 echo "View";
 } ?></a></p> </td>
-<td> <p><a class="btn btn-primary" href="/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID ?>&action=wallet"><?php if ($language == "es_ES") {
-echo "Ver";
-} else {
-echo "View";
-} ?></a></p> </td>
-<td> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID; ?>&action=profile"><?php if ($language == "es_ES") {
+<td style="text-align:center;"> <p><a class="btn btn-primary" href="<?php echo site_url(); ?>/wp-admin/admin.php?page=olu_fitness&user_id=<?php echo $row->ID; ?>&action=profile"><?php if ($language == "es_ES") {
 echo "Ver";
 } else {
 echo "View";

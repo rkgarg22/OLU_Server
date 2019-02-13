@@ -108,18 +108,12 @@ ini_set('display_errors', 1);
             $terMyTerm = get_term($row->categoryID, "category");
             if ( !empty($getBookingPayment) && $getBookingPayment[0]->booking_paid == 0) {
                 $className = "danger";
-                if ($language == "es_ES") {
-                    $booking_status = "No pagado";
-                } else {
-                    $booking_status = "Not Paid";
-                }
+
+                    $booking_status = "Pago pendiente";
             } else {
                 $className = "success";
-                if ($language == "es_ES") {
+
                     $booking_status = "Pagado";
-                } else {
-                    $booking_status = "Paid";
-                }
             }
             ?>
         <tr>

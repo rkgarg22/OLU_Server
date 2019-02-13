@@ -1059,6 +1059,7 @@ function collectAPI($userID , $price , $token, $payer) {
 	$nonceBase64 = base64_encode($nonce);
 	$nextmonth = date('c', strtotime(' +1 month'));
 	$tranKey = base64_encode(sha1($nonce . $seed . "i0619XM418y6Pc82", true));
+	$priceSave = $price;
 	if (strpos($price, ".") !== false) {
 		$price = number_format((float)$price, 3, '.', '');
 		$price = str_replace("." , "" ,$price);
@@ -1099,8 +1100,8 @@ $myfile = fopen(ABSPATH."newfile.txt", "w") or die("Unable to open file!");
 			'user_id' => $userID,
 			'txn_id' => $result->requestId,
 			'moneyPlan' => "custom",
-			'moneyValue' => $price,
-			'moneyAdded' => $price,
+			'moneyValue' => $priceSave,
+			'moneyAdded' => $priceSave,
 			'created_date' => date("Y-m-d H:i:s"),
 			'payment_status' => 1,
 			'ref_num' => $generateMyRefNumber

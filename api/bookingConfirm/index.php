@@ -103,7 +103,6 @@ if ($userID == "") {
             if ($diff->i <= 15 && $diff->h == 0) {
                 if ($status == 2 || $status == 3) {
                 //user1
-
                     $categoryData = get_term_by('id', $getBookingDetails[0]->category_id, 'category');
                     $firstName = get_user_meta($getBookingDetails[0]->user_id, "first_name", true);
                     $lastName = get_user_meta($getBookingDetails[0]->user_id, "last_name", true);
@@ -131,7 +130,7 @@ if ($userID == "") {
                     $start = date_create();
                     $diff = date_diff($start, $end);
                     // print_r($diff);
-                    if ($diff->i >= 60 || $diff->h >= 1) {
+                    /* if ($diff->i >= 60 || $diff->h >= 1) { */
                         $categoryData = get_term_by('id', $getBookingDetails[0]->category_id, 'category');
                         $firstNameUser2 = get_user_meta($getBookingDetails[0]->user_id, "first_name", true);
                         $lastName = get_user_meta($getBookingDetails[0]->user_id, "last_name", true);
@@ -144,9 +143,9 @@ if ($userID == "") {
                         sendMessageData($firebaseTokenIdUser2, $title, $messageUser2, $getBookingDetails[0]->id, $firstNameUser2, $lastName, $getBookingDetails[0]->category_id, $categoryData->name, $getBookingDetails[0]->booking_date, $phone, $getBookingDetails[0]->booking_start, $getBookingDetails[0]->booking_end, 5, $getBookingDetails[0]->booking_address, $getBookingDetails[0]->booking_latitude, $getBookingDetails[0]->booking_longitude, $userImageUrl, $section, $getBookingDetails[0]->booking_created, $curent);
                         $wpdb->query("UPDATE `wtw_booking` SET `status` = 5 , `booking_action_time` = '$curent' WHERE `id` = $bookingID");
                         $json = array("success" => 1, "result" => 1, "error" => "Tu sesión ha terminado");
-                    } else {
+                    /* } else {
                         $json = array("success" => 0, "result" => 0, "error" => "No puedes cancelar la reserva ahora");
-                    }
+                    } */
                 } else {
                     //user1
                     $firstName = get_user_meta($getBookingDetails[0]->booking_from, "first_name", true);

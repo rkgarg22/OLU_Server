@@ -59,6 +59,7 @@ if ($userID == "") {
                 if ($status == 1) {
 
                     $getBookingReview = $wpdb->get_results("SELECT * FROM `wtw_booking_reviews` WHERE `booking_id` = $getUserDataBookingvalue->id AND `review_from` = $getUserDataBookingvalue->booking_from");
+                    $getBookingPaid = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $getUserDataBookingvalue->id");
                     // echo "SELECT * FROM `wtw_booking_reviews` WHERE `booking_id` = $getUserDataBookingvalue->id AND `review_from` = $getUserDataBookingvalue->booking_from";
                     if (!empty($getBookingReview)) {
                         $review = $getBookingReview[0]->comments;
@@ -101,7 +102,7 @@ if ($userID == "") {
                         } else {
                             $section = 3;
                         } */
-                        $pprice = getBookingPriceTrainer($getUserDataBookingvalue->id) - 2;
+                        $pprice = getBookingPriceTrainer1($getUserDataBookingvalue->id) - 2;
                         $getMyPrice = $pprice / 100 * 72;
                         if (strpos($getMyPrice, ".") !== false) {
                             $price = number_format((float)$getMyPrice, 3, '.', '');
@@ -111,6 +112,9 @@ if ($userID == "") {
                         if ($price < 0) {
                             $price = 0;
                         }
+                        echo "<pre>";
+                            print_r($price);
+                        echo "</pre>";
                         $bookingArr[] = array("userID" => (int)$userCheck, "bookingID" => (int)$getUserDataBookingvalue->id, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "categoryID" => (int)$terMyTerm->term_id, "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "userImageUrl" => $userImageUrl, "bookingLatitude" => $getUserDataBookingvalue->booking_latitude, "bookingLongitude" => $getUserDataBookingvalue->booking_longitude, "bookingAddress" => $getUserDataBookingvalue->booking_address, "review" => $review, "starRating" => $reviewStar, "bookingTime" => strtotime($getUserDataBookingvalue->booking_date . " " . $getUserDataBookingvalue->booking_start), "bookingFor" => $section , "amount" => $getThisBooking = $price);
                     } else {
                         $wpdb->query("UPDATE `wtw_booking` SET `status` = 5, `booking_action_time` = '$curent' WHERE `id` = $getUserDataBookingvalue->id");
@@ -142,7 +146,7 @@ if ($userID == "") {
                    
                     $userData = get_userdata($userCheck);
                 }
-                $pprice = getBookingPriceTrainer($getUserDataBookingvalue->id) - 2;
+                $pprice = getBookingPriceTrainer1($getUserDataBookingvalue->id) - 2;
                 $getMyPrice = $pprice / 100 * 72;
                 if (strpos($getMyPrice, ".") !== false) {
                     $test = explode("." , $getMyPrice);
@@ -153,24 +157,28 @@ if ($userID == "") {
                     } elseif($finTest == 2) {
                         $point = "0";
                     }
-                    $price = number_format((float)$getMyPrice, 3, '.', $point);
+                    // $price1 = $getMyPrice.$point;
+                    $price1 = number_format((float)$getMyPrice, 3, '.', '');
                 } else {
-                    $price = $getMyPrice . ".000";
+                    $price1 = $getMyPrice . ".000";
                 }
-                if($getUserDataBookingvalue->isPaid == 1) {
+                if($getBookingPaid[0]->booking_paid == 1) {
                     $statusPaid = "Pagado";
                 } else {
                     $statusPaid = "Pendiente";
                 }
-                if ($price < 0) {
-                    $price = 0;
-                } else {
-                    $price = $price * 1000;
-                }
-                $bookingArr[] = array("userID" => $userData->data->user_login, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "bookingAddress" => $getUserDataBookingvalue->booking_address, "bookingCreated" => $getUserDataBookingvalue->booking_created, "review" => $review, "starRating" => $reviewStar, "bookingTime" => $getUserDataBookingvalue->booking_date . " " . $getUserDataBookingvalue->booking_start, "amount" => $getThisBooking = $price, "status" => $statusPaid);
+                if ($price1 < 0) {
+                    $price1 = 0;
+                } 
+
+                
+                $bookingArr[] = array("userID" => $userData->data->user_login, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "bookingType" => $section, "phone" => $phone, "bookingAddress" => $getUserDataBookingvalue->booking_address, "bookingCreated" => $getUserDataBookingvalue->booking_created, "review" => $review, "starRating" => $reviewStar, "bookingTime" => $getUserDataBookingvalue->booking_date . " " . $getUserDataBookingvalue->booking_start, "amount" => "$".$price1, "status" => $statusPaid);
 
 
             }
+            /* echo "<pre>";
+            print_r($bookingArr);
+            echo "</pre>"; */
             if (!empty($bookingArr)) {
                 
                 foreach ($bookingArr as $key => $value) {
