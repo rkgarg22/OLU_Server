@@ -113,7 +113,7 @@
 </tr>
 <?php 
 $i = 1;
-foreach ($wpdb->get_results("SELECT * FROM `wtw_promocode` ORDER BY `id` DESC") as $key => $row) {
+foreach ($wpdb->get_results("SELECT * FROM `wtw_promocode` WHERE `status`  = 1 ORDER BY `id` DESC") as $key => $row) {
     ?>
 <tr>
 <td><?php echo $i; ?></th>

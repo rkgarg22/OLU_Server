@@ -95,7 +95,7 @@ if ($userID == "") {
                 } else {
                     $distance = distance(floatval($latitude), floatval($longitude), floatval($userLatitude), floatval($useLongitude), "K");
                 }
-                if ($distance <= 100 && $isOnline == 1 && $isActive == 1 && $isApprove == "yes" && $statusTrue == "true") {
+                if ($useLongitude != "" && $distance <= 100 && $isOnline == 1 && $isActive == 1 && $isApprove == "yes" && $statusTrue == "true") {
                    /*  $user = 'user_' . $value->ID;
                     $variable = get_field('categories', $user); */
                     if(empty($category)) {
@@ -234,7 +234,7 @@ if ($userID == "") {
                         }
 
                         
-                        if ($stat == "True" && $price != "") {
+                        if ($stat == "True" && $price != "" && $price != 0) {
 
                             $getCateData = $wpdb->get_results("SELECT * FROM `wtw_user_pricing` WHERE `user_id` = $value->ID");
                             $arrayOrep = array();

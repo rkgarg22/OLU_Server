@@ -857,6 +857,11 @@ function getUserWallet($userID) {
 		$priceSection = $wpdb->get_results("SELECT * FROM `wtw_booking_price` WHERE `booking_id` = $value->id");
 		if (isset($valueCode)) {
 			$bookingPrice =   ($valueCode / 100) * $priceSection[0]->booking_price;
+			if(strtotime($value->booking_created) >= strtotime("2019-02-26 00:00:00")){
+				if ($bookingPrice == 0) {
+					$bookingPrice = 2;
+				}
+			}
 		} else {
 			$bookingPrice = $priceSection[0]->booking_price;
 		}
@@ -1066,7 +1071,7 @@ function collectAPI($userID , $price , $token, $payer) {
 	} else {
 		$price = $price . "000";
 	}
-	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ',"buyer":{"document":"","documentType":"CC","name":"' . $first_name . '","surname":"' . $last_name . '","email":"' . $user->data->user_login . '","address":{"street":"","city":"","country":""}} , "payment": { "reference": "'. $generateMyRefNumber .'", "description": "Pago básico de prueba", "amount": { "currency": "COP", "total": "' . $price . '" } }}';
+	$collectData = '{ "auth": {"login": "' . $login . '", "seed" : "' . $seed . '", "nonce" :"' . $nonceBase64 . '" ,  "tranKey" :"' . $tranKey . '" },  "instrument": { "token": { "token": "' . $token . '" } } , "payer" : ' . json_encode($payer) . ',"buyer":{"document":"","documentType":"CC","name":"' . $first_name . '","surname":"' . $last_name . '","email":"' . $user->data->user_login . '","address":{"street":"","city":"","country":""}} , "payment": { "reference": "'. $generateMyRefNumber . '", "description": "Pago transacción OluApp.", "amount": { "currency": "COP", "total": "' . $price . '" } }}';
 	// echo $collectData;
 	$ch = curl_init();
 	$agents = array(
@@ -1112,7 +1117,9 @@ $myfile = fopen(ABSPATH."newfile.txt", "w") or die("Unable to open file!");
 				return "FalseEl método de pago que has ingresado está en estado de RECHAZADO. Por favor comunícate con tu entidad bancaria para verificar la información. Si deseas continuar con el proceso de OLU, puedes ingresar otro método de pago. Muchas gracias";
 			}  elseif ($result->status->status == "PENDING") {
 				return "False“En este momento su SOLICITUD presenta un proceso de pago cuya transacción se encuentra PENDIENTE de recibir confirmación por parte de su entidad financiera, por favor espere unos minutos y vuelva a consultar más tarde para verificar si su pago fue confirmado de forma exitosa. Si desea mayor información sobre el estado actual de su operación puede comunicarse a nuestras líneas de atención al cliente o enviar un correo electrónico a hola@olu.com y preguntar por el estado de la transacción.";
-			}
+			}  else {
+				return "False";
+			} 
 }
 
 function getPaymerDetails($userID) {
@@ -1440,17 +1447,17 @@ function getMyAgendaAvailable($userID , $agenda_datee , $agenda_start_time , $ag
 				
 		} elseif ($value->agenda_type == 0) {
 			if (date("Y-m-d", strtotime($agendaBookingend_date)) == $value->agenda_date) {
-				if ((strtotime($agenda_date . " " . $agenda_start_time) >= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agenda_date . " " . $agenda_start_time) <= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
+				if ((strtotime($agendaBookingend_date . " " . $agenda_start_time) >= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_start_time) <= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 				if ((strtotime($agendaBookingend_date . " " . $agenda_end_time) >= strtotime($value->agenda_date . " " . $value->agenda_start_time)) && (strtotime($agendaBookingend_date . " " . $agenda_end_time) <= strtotime($value->agenda_end_date . " " . $value->agenda_end_time))) {
 					$status = "False";
 				}
 
-				if ((strtotime($value->agenda_date . " " . $value->agenda_start_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($value->agenda_date . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($value->agenda_date . " " . $value->agenda_start_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($value->agenda_date . " " . $value->agenda_start_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
-				if ((strtotime($value->agenda_end_date . " " . $value->agenda_end_time) >= strtotime($agenda_date . " " . $agenda_start_time)) && (strtotime($value->agenda_end_date . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
+				if ((strtotime($value->agenda_end_date . " " . $value->agenda_end_time) >= strtotime($agendaBookingend_date . " " . $agenda_start_time)) && (strtotime($value->agenda_end_date . " " . $value->agenda_end_time) <= strtotime($agendaBookingend_date . " " . $agenda_end_time))) {
 					$status = "False";
 				}
 			}

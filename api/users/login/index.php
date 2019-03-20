@@ -8,10 +8,10 @@ $password = $data_body["password"];
 $firebaseTokenId = $data_body["firebaseTokenId"];
 $deviceType = $data_body["deviceType"];
 $userType = $data_body["userType"];
-/* $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+$myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
 $txt = file_get_contents("php://input");
 fwrite($myfile, $txt);
-fclose($myfile); */
+fclose($myfile);
 if($userType == 1) {
     $role = "contributor";
 } else {

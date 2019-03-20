@@ -1,1 +1,1 @@
-{"status":{"status":"APPROVED","reason":"00","message":"La petici\u00f3n ha sido aprobada exitosamente","date":"2019-02-12T14:52:29-05:00"},"requestId":7500459,"reference":"1550001013","signature":"a5d1f23ea9423d6407d9fcf43fed33ca2da6cc07"}
+{"status":{"status":"REJECTED","reason":"EX","message":"La petici\u00f3n ha expirado","date":"2019-03-19T16:17:51-05:00"},"requestId":7740658,"reference":"1550610988","signature":"fadfe7a5745d89f372ea3a1c95011d4737694107"}

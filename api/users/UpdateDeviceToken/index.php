@@ -4,7 +4,10 @@ global $wpdb;
 //Defining varables
 $userID = $_GET['userID'];
 $firebaseTokenId = $_GET['firebaseTokenId'];
-
+$myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+$txt = json_encode($_GET);
+fwrite($myfile, $txt);
+fclose($myfile);
 if ($userID == "") {
     $json = array("success" => 0, "result" => 0, "error" => "Todos los campos son obligatorios");
 } else {

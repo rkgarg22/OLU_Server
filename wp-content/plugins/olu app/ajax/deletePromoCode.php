@@ -2,6 +2,6 @@
 include("../../../../wp-config.php");
 global $wpdb;
 $promoCode = $_POST['promoCode'];
-$wpdb->query("DELETE FROM `wtw_promocode` WHERE `id` = $promoCode");
+$wpdb->query("UPDATE `wtw_promocode` SET `status` = 0 WHERE `id` = $promoCode");
 echo "Success";
 ?>

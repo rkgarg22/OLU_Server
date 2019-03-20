@@ -24,6 +24,7 @@ if ($userID == "") {
             $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE  `user_id` = $userID AND  DATE(`booking_date`) = '" . $currentDate . "' AND `status` = 3 OR `user_id` = $userID AND  DATE(`booking_date`) = '" . $currentDate . "' AND `status` = 1 ORDER BY `booking_start` ASC");
            // $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `user_id` = $userID AND `status` = $status ORDER BY `booking_date` $order");
         } else {
+            
             $getUserDataBooking = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE  `booking_from` = $userID AND  DATE(`booking_date`) = '" . $currentDate . "' AND `status` = 3 OR `booking_from` = $userID AND  DATE(`booking_date`) = '" . $currentDate . "' AND`status` = 1 ORDER BY `booking_start` ASC");
             //$getAllData = $wpdb->get_results("SELECT * FROM `wtw_booking` WHERE `booking_from` = $userID AND `status` = $status ORDER BY `booking_date` $order");
         }
@@ -31,11 +32,19 @@ if ($userID == "") {
         
         $bookingArr = array();
         foreach ($getUserDataBooking as $getUserDataBookingkey => $getUserDataBookingvalue) {
-            $terMyTerm = get_term($getUserDataBookingvalue->category_id, "category");
-            $firstNameC = get_user_meta($getUserDataBookingvalue->booking_from, "first_name", true);
-            $userImageUrl = get_user_meta($getUserDataBookingvalue->booking_from, "userImageUrl", true);
-            $phone = get_user_meta($getUserDataBookingvalue->booking_from, "phone", true);
-            $lastNameC = get_user_meta($getUserDataBookingvalue->booking_from, "last_name", true);
+            if ($user->roles[0] == "contributor") {
+                $terMyTerm = get_term($getUserDataBookingvalue->category_id, "category");
+                $firstNameC = get_user_meta($getUserDataBookingvalue->booking_from, "first_name", true);
+                $userImageUrl = get_user_meta($getUserDataBookingvalue->booking_from, "userImageUrl", true);
+                $phone = get_user_meta($getUserDataBookingvalue->booking_from, "phone", true);
+                $lastNameC = get_user_meta($getUserDataBookingvalue->booking_from, "last_name", true);
+            } else {
+                $terMyTerm = get_term($getUserDataBookingvalue->category_id, "category");
+                $firstNameC = get_user_meta($getUserDataBookingvalue->user_id, "first_name", true);
+                $userImageUrl = get_user_meta($getUserDataBookingvalue->user_id, "userImageUrl", true);
+                $phone = get_user_meta($getUserDataBookingvalue->user_id, "phone", true);
+                $lastNameC = get_user_meta($getUserDataBookingvalue->user_id, "last_name", true);
+            }
             
             $bookingArr[] = array("userID" => (int)$getUserDataBookingvalue->booking_from, "bookingID" => (int)$getUserDataBookingvalue->id, "categoryID" => (int)$getUserDataBookingvalue->category_id, "bookingDate" => $getUserDataBookingvalue->booking_date, "category" => apply_filters('translate_text', $terMyTerm->name, $lang = $language, $flags = 0), "firstName" => $firstNameC, "lastName" => $lastNameC, "bookingStart" => $getUserDataBookingvalue->booking_start, "bookingEnd" => $getUserDataBookingvalue->booking_end, "phone" => $phone, "userImageUrl" => $userImageUrl, "bookingLatitude" => $getUserDataBookingvalue->booking_latitude, "bookingLongitude" => $getUserDataBookingvalue->booking_longitude, "bookingAddress" => $getUserDataBookingvalue->booking_address , "status" => (int)$getUserDataBookingvalue->status, "isAgenda" => 0, "agendaID" => "", "agendaText" => "", "agendaType" => $getBookingAgendavalue->agenda_type);
         }

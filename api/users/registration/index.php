@@ -40,30 +40,38 @@ if ($emailAddress != "") {
             update_user_meta($user->data->ID, 'firebaseTokenId', $firebaseTokenId);
         }
         if ($facebookId != "") {
-            $facebookIdold = get_user_meta($userID, "facebookId", true);
-            $profileImageURL1 = get_user_meta($userID, "userImageUrl", true);
-            $first_name = get_user_meta($userID, "first_name", true);
-            $last_name = get_user_meta($userID, "last_name", true);
-            update_user_meta($user->data->ID, 'latitude', $latitude);
-            update_user_meta($user->data->ID, 'longitude', $longitude);
-            update_user_meta($user->data->ID, 'deviceType', $deviceType);
-            update_user_meta($user->data->ID, 'phone', $phone);
-            $dob = get_user_meta($user->ID, "dob", true);
-            $phone = get_user_meta($user->ID, "phone", true);
-            $gender = get_user_meta($user->ID, "gender", true);
-            $role = ( array )$user->roles;
-            $role = $role[0];
-           
-            if ($role == "contributor") {
-                $userRole = 1; //Trainer
-            } elseif ($role == "subscriber") {
-                $userRole = 2; //User
-            } else {
-                $role = 0;// others
-            }
-            $arrayData = array("userID" => (int)$userID, "firstName" => $first_name, "lastName" => $last_name, "emailAddress" => $email_Address, "userImageUrl" => $profileImageURL1, "latitude" => $latitude, "longitude" => $longitude , "role" => $userRole, "dob" => $dob, "gender" => $gender, "phone" => $phone);
+            $user = get_user_by('email', $emailAddress);
 
-            $json = array("success" => 1, "result" => $arrayData, "error" => "No se ha encontrado ningún error");
+            $myUserRole = $user->roles[0];
+            if ($myUserRole == "subscriber") {
+
+                $facebookIdold = get_user_meta($userID, "facebookId", true);
+                $profileImageURL1 = get_user_meta($userID, "userImageUrl", true);
+                $first_name = get_user_meta($userID, "first_name", true);
+                $last_name = get_user_meta($userID, "last_name", true);
+                update_user_meta($user->data->ID, 'latitude', $latitude);
+                update_user_meta($user->data->ID, 'longitude', $longitude);
+                update_user_meta($user->data->ID, 'deviceType', $deviceType);
+                update_user_meta($user->data->ID, 'phone', $phone);
+                $dob = get_user_meta($user->ID, "dob", true);
+                $phone = get_user_meta($user->ID, "phone", true);
+                $gender = get_user_meta($user->ID, "gender", true);
+                $role = ( array )$user->roles;
+                $role = $role[0];
+
+                if ($role == "contributor") {
+                    $userRole = 1; //Trainer
+                } elseif ($role == "subscriber") {
+                    $userRole = 2; //User
+                } else {
+                    $role = 0;// others
+                }
+                $arrayData = array("userID" => (int)$userID, "firstName" => $first_name, "lastName" => $last_name, "emailAddress" => $email_Address, "userImageUrl" => $profileImageURL1, "latitude" => $latitude, "longitude" => $longitude, "role" => $userRole, "dob" => $dob, "gender" => $gender, "phone" => $phone);
+
+                $json = array("success" => 1, "result" => $arrayData, "error" => "No se ha encontrado ningún error");
+            } else {
+                $json = array("success" => 0, "result" => null, "error" => "Usuario inválido");
+            }
         } else {
             $json = array("success" => 0, "result" => null, "error" => "La dirección de correo ya existe");
         }
